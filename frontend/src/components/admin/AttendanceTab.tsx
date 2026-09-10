@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ApiError, apiGet, apiPost } from "@/lib/api";
+import HolidayCalendarCard from "@/components/admin/HolidayCalendarCard";
+import StudentDetailDialog from "@/components/admin/StudentDetailDialog";
 import { ATTENDANCE_CODES, ATTENDANCE_LABELS } from "@/lib/types";
 import type { AttendanceDay, AttendanceRangeSummary } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -29,6 +31,7 @@ function firstOfMonth(iso: string) {
 export default function AttendanceTab() {
   const qc = useQueryClient();
   const [day, setDay] = useState<string>("");
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [range, setRange] = useState<{ from: string; to: string }>({ from: "", to: "" });
 
@@ -93,6 +96,8 @@ export default function AttendanceTab() {
 
   return (
     <div className="space-y-5" data-testid="attendance-tab">
+      <StudentDetailDialog studentId={detailId} onClose={() => setDetailId(null)} />
+
       {/* DATE + BULK CONTROLS */}
       <Card className="border-slate-800 bg-[#111C35] p-5">
         <div className="flex flex-wrap items-end gap-4">
@@ -111,6 +116,15 @@ export default function AttendanceTab() {
             {sheet.data?.is_today && (
               <Badge variant="secondary" className="bg-emerald-500/15 text-emerald-300" data-testid="attendance-today-badge">
                 Today
+              </Badge>
+            )}
+            {sheet.data?.holiday_name && (
+              <Badge
+                variant="secondary"
+                className="bg-amber-500/15 text-amber-300"
+                data-testid="attendance-holiday-badge"
+              >
+                {sheet.data.holiday_code === "NC" ? "No Class" : "Holiday"}: {sheet.data.holiday_name}
               </Badge>
             )}
             <Badge variant="secondary" className="bg-[#1E2E54] text-sky-300" data-testid="attendance-marked-count">
@@ -176,7 +190,14 @@ export default function AttendanceTab() {
             >
               <span className="w-6 font-mono text-xs text-slate-500">{i + 1}</span>
               <div className="min-w-[180px] flex-1">
-                <p className="text-sm font-semibold text-slate-100">{r.full_name}</p>
+                <button
+                  type="button"
+                  data-testid={`attendance-view-student-${r.student_id}`}
+                  onClick={() => setDetailId(r.student_id)}
+                  className="text-left text-sm font-semibold text-slate-100 transition-colors hover:text-sky-300"
+                >
+                  {r.full_name}
+                </button>
                 <p className="text-[11px] text-slate-400">
                   {[r.year, r.branch].filter(Boolean).join(" · ") || "—"}
                   {r.phone ? ` · ${r.phone}` : ""}
@@ -216,6 +237,8 @@ export default function AttendanceTab() {
           )}
         </div>
       </Card>
+
+      <HolidayCalendarCard month={activeDate ? activeDate.slice(0, 7) : ""} />
 
       {/* RANGE FILTER + PDF */}
       <Card className="border-slate-800 bg-[#111C35] p-5" data-testid="attendance-range-card">

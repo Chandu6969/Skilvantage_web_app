@@ -112,6 +112,26 @@ attendance and payment rows.
 Seed the roster from the user's HTML files with `python seed_students.py` (38 students, idempotent
 by name, monthly_amount ₹999).
 
+## Holiday calendar (admin → Attendance tab)
+`holidays` collection, one doc per date (unique): `{date, name, code}` where code is **H** or
+**NC**. Holidays are applied **implicitly at read time** — no per-student rows are written — and an
+explicit mark on a student always overrides the holiday.
+- `GET /api/admin/holidays?date_from=&date_to=` — string (lexicographic) range, so a loose month
+  end like `-31` is accepted and will NOT 400.
+- `POST /api/admin/holidays` — single festival holiday (duplicate date → 400, bad code → 400).
+- `POST /api/admin/holidays/fill-weekly?month=&weekday=&name=` — preset every Sunday (weekday 6)
+  or any weekday (0=Mon…6=Sun) in a month, skipping existing dates.
+- `POST /api/admin/holidays/fill-sundays` (body: month, name) — Sunday-only convenience wrapper.
+- `POST /api/admin/holidays/clear-month?month=` — wipe a month (returns count in `skipped`).
+Both `attendance/day` (returns `holiday_name`/`holiday_code`) and `attendance/summary` honour
+holidays, so the PDF/CSV exports pick them up automatically.
+
+## Student detail
+`GET /api/admin/students/{id}/detail` → profile, per-code counts, working days, attendance %,
+full attendance history (each item flagged `auto: true` when it came from a holiday) and the
+complete payment ledger with months_paid / paid_to_date / balance. Surfaced as a dialog opened
+from the Students tab ("View") **and** by clicking a student's name in the Attendance register.
+
 ## Seed facts
 - `python seed_students.py` → 38-student roster (from the user's attendance-register and
   student-portal HTML files), each with year, branch, phone and monthly_amount ₹999. Idempotent

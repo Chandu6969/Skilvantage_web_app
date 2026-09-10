@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import StudentDetailDialog from "@/components/admin/StudentDetailDialog";
 import {
   Select,
   SelectContent,
@@ -35,6 +36,7 @@ export default function StudentsTab() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [form, setForm] = useState<StudentCreate>(EMPTY);
 
   const students = useQuery({
@@ -164,6 +166,15 @@ export default function StudentsTab() {
                   <td className="py-2.5">
                     <Button
                       size="sm"
+                      variant="outline"
+                      data-testid={`student-view-${s.id}`}
+                      className="mr-2 border-sky-500/40 text-sky-200 hover:bg-sky-500/10"
+                      onClick={() => setDetailId(s.id)}
+                    >
+                      View
+                    </Button>
+                    <Button
+                      size="sm"
                       variant="ghost"
                       data-testid={`student-delete-${s.id}`}
                       className="text-rose-300 hover:bg-rose-500/10"
@@ -183,6 +194,8 @@ export default function StudentsTab() {
           </p>
         )}
       </Card>
+
+      <StudentDetailDialog studentId={detailId} onClose={() => setDetailId(null)} />
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-lg" data-testid="student-create-dialog">

@@ -106,6 +106,8 @@ class AttendanceDay(BaseModel):
     marked: int
     total: int
     rows: list[AttendanceCell]
+    holiday_name: Optional[str] = None
+    holiday_code: Optional[str] = None
 
 
 class AttendanceStudentSummary(BaseModel):
@@ -126,6 +128,58 @@ class AttendanceRangeSummary(BaseModel):
     dates: list[str]
     students: list[AttendanceStudentSummary]
     overall_percentage: float
+
+
+class HolidayCreate(BaseModel):
+    date: str  # YYYY-MM-DD
+    name: str = Field(min_length=1, max_length=120)
+    code: str = "H"  # H = Holiday, NC = No Class
+
+
+class Holiday(HolidayCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    created_at: datetime = Field(default_factory=_now)
+
+
+class SundayFillRequest(BaseModel):
+    month: str  # YYYY-MM
+    name: str = "Sunday"
+
+
+class HolidayBulkResult(BaseModel):
+    created: int
+    skipped: int
+    holidays: list[Holiday]
+
+
+class AttendanceHistoryItem(BaseModel):
+    date: str
+    code: str
+    label: str
+    auto: bool = False
+
+
+class PaymentLedgerItem(BaseModel):
+    month: str
+    paid: bool
+    amount: Optional[float] = None
+    method: Optional[str] = None
+    paid_on: Optional[str] = None
+    notes: str = ""
+
+
+class StudentDetail(BaseModel):
+    student: "Student"
+    counts: dict[str, int]
+    working_days: int
+    attended: int
+    percentage: float
+    history: list[AttendanceHistoryItem]
+    ledger: list[PaymentLedgerItem]
+    months_paid: int
+    paid_to_date: float
+    balance: Optional[float] = None
+    monthly_amount: float
 
 
 class PaymentUpsert(BaseModel):

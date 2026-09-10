@@ -11,6 +11,7 @@ from fastapi.responses import StreamingResponse
 from lib.auth import current_admin
 from lib.db import db
 from lib.dates import today_iso
+from routers.holidays import holiday_map
 from models.students import (
     ATTENDANCE_CODES,
     ATTENDANCE_LABELS,
@@ -49,6 +50,8 @@ async def day_sheet(admin: dict = Depends(current_admin), date_: Optional[str] =
         r["student_id"]: r["code"]
         for r in await db.attendance.find({"date": target}).to_list(2000)
     }
+    # A holiday auto-fills the register for anyone not explicitly marked.
+    holiday = (await holiday_map(target, target)).get(target)
     rows = [
         AttendanceCell(
             student_id=s["id"],
@@ -56,7 +59,7 @@ async def day_sheet(admin: dict = Depends(current_admin), date_: Optional[str] =
             year=s.get("year"),
             branch=s.get("branch"),
             phone=s.get("phone"),
-            code=existing.get(s["id"]),
+            code=existing.get(s["id"]) or (holiday["code"] if holiday else None),
         )
         for s in students
     ]
@@ -66,6 +69,8 @@ async def day_sheet(admin: dict = Depends(current_admin), date_: Optional[str] =
         marked=sum(1 for r in rows if r.code),
         total=len(rows),
         rows=rows,
+        holiday_name=holiday["name"] if holiday else None,
+        holiday_code=holiday["code"] if holiday else None,
     )
 
 
@@ -137,6 +142,7 @@ async def _range_summary(date_from: str, date_to: str) -> AttendanceRangeSummary
     records = await db.attendance.find(
         {"date": {"$gte": date_from, "$lte": date_to}}
     ).to_list(20000)
+    holidays = await holiday_map(date_from, date_to)
 
     by_student: dict[str, dict[str, str]] = {}
     for r in records:
@@ -144,7 +150,10 @@ async def _range_summary(date_from: str, date_to: str) -> AttendanceRangeSummary
 
     summaries: list[AttendanceStudentSummary] = []
     for s in students:
-        marks = by_student.get(s["id"], {})
+        explicit = by_student.get(s["id"], {})
+        # Holidays auto-fill any date the student was not explicitly marked on.
+        marks = {d: h["code"] for d, h in holidays.items() if d not in explicit}
+        marks.update(explicit)
         counts = {code: 0 for code in ATTENDANCE_CODES}
         for code in marks.values():
             if code in counts:

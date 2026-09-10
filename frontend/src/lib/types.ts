@@ -232,6 +232,50 @@ export interface StudentCreate {
   notes?: string;
 }
 
+export interface Holiday {
+  id: string;
+  date: string;
+  name: string;
+  code: string;
+  created_at: string;
+}
+
+export interface HolidayBulkResult {
+  created: number;
+  skipped: number;
+  holidays: Holiday[];
+}
+
+export interface AttendanceHistoryItem {
+  date: string;
+  code: string;
+  label: string;
+  auto: boolean;
+}
+
+export interface PaymentLedgerItem {
+  month: string;
+  paid: boolean;
+  amount?: number | null;
+  method?: string | null;
+  paid_on?: string | null;
+  notes: string;
+}
+
+export interface StudentDetail {
+  student: Student;
+  counts: Record<string, number>;
+  working_days: number;
+  attended: number;
+  percentage: number;
+  history: AttendanceHistoryItem[];
+  ledger: PaymentLedgerItem[];
+  months_paid: number;
+  paid_to_date: number;
+  balance?: number | null;
+  monthly_amount: number;
+}
+
 export interface AttendanceCell {
   student_id: string;
   full_name: string;
@@ -247,6 +291,8 @@ export interface AttendanceDay {
   marked: number;
   total: number;
   rows: AttendanceCell[];
+  holiday_name?: string | null;
+  holiday_code?: string | null;
 }
 
 export interface AttendanceStudentSummary {
