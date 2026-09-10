@@ -132,6 +132,25 @@ full attendance history (each item flagged `auto: true` when it came from a holi
 complete payment ledger with months_paid / paid_to_date / balance. Surfaced as a dialog opened
 from the Students tab ("View") **and** by clicking a student's name in the Attendance register.
 
+## Roster learner types (students vs working professionals)
+`students` is one collection with a **`learner_type`** discriminator (`"student"` | `"professional"`),
+so professionals are managed exactly like students but kept in **separate registers**.
+- Student fields: `year`, `branch`, `program`.
+- Professional fields: `company`, `current_role`, `experience_years`, `target_role`,
+  `notice_period`, `current_package`.
+- `GET /api/admin/students?learner_type=student|professional` filters the roster.
+- `attendance/day`, `attendance/save`, `attendance/mark-all`, `attendance/summary`,
+  `attendance/export.pdf|csv`, `payments`, `payments/export.pdf|csv` **all accept
+  `?learner_type=`** — omitting it returns the combined roster, so the UI always passes it.
+- `import-from-registrations` maps the lead's own learner_type and copies the professional fields.
+- Admin tabs: Attendance / Payments / Students (students) and **Pro Attendance / Pro Payments /
+  Professionals** (working professionals). `StudentsTab`, `AttendanceTab` and `PaymentsTab` each
+  take a `learnerType` prop and are rendered twice — do NOT fork them into duplicate components.
+- Backfill for pre-existing rows: `python backfill_learner_type.py` (already run; 37 tagged
+  "student").
+- The Leads tab dialog shows the full professional registration detail (company, current role,
+  target role, notice period, industry, current package, batch timing, career-change reason).
+
 ## Seed facts
 - `python seed_students.py` → 38-student roster (from the user's attendance-register and
   student-portal HTML files), each with year, branch, phone and monthly_amount ₹999. Idempotent

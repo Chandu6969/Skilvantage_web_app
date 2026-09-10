@@ -34,13 +34,22 @@ async def list_students(
     admin: dict = Depends(current_admin),
     q: Optional[str] = None,
     active_only: bool = False,
+    learner_type: Optional[str] = None,
 ):
     query: dict = {}
+    if learner_type in ("student", "professional"):
+        query["learner_type"] = learner_type
     if active_only:
         query["active"] = True
     if q:
         rx = {"$regex": q, "$options": "i"}
-        query["$or"] = [{"full_name": rx}, {"phone": rx}, {"email": rx}]
+        query["$or"] = [
+            {"full_name": rx},
+            {"phone": rx},
+            {"email": rx},
+            {"company": rx},
+            {"current_role": rx},
+        ]
     docs = await db.students.find(query).sort("full_name", 1).to_list(1000)
     return [Student(**_clean(d)) for d in docs]
 
@@ -158,11 +167,20 @@ async def import_from_registrations(admin: dict = Depends(current_admin)):
             continue
         student = Student(
             full_name=lead.get("full_name", "Unnamed"),
+            learner_type=(
+                "professional" if lead.get("learner_type") == "professional" else "student"
+            ),
             phone=lead.get("phone"),
             email=lead.get("email"),
             year=lead.get("current_year_of_study") or lead.get("degree"),
             branch=lead.get("branch"),
             program=lead.get("program"),
+            company=lead.get("current_company"),
+            current_role=lead.get("current_role"),
+            experience_years=lead.get("experience_years"),
+            target_role=lead.get("target_role"),
+            notice_period=lead.get("notice_period"),
+            current_package=lead.get("current_package"),
             registration_id=reg_id,
         )
         await db.students.insert_one(student.model_dump())

@@ -42,6 +42,7 @@ INDEXES: dict[str, list[IndexModel]] = {
         IndexModel([("start_date", ASCENDING)], name="start_date"),
     ],
     "students": [
+        IndexModel([("learner_type", ASCENDING), ("active", ASCENDING)], name="type_active"),
         IndexModel([("id", ASCENDING)], name="id", unique=True),
         IndexModel([("full_name", ASCENDING)], name="full_name"),
         IndexModel([("active", ASCENDING), ("full_name", ASCENDING)], name="active_name"),

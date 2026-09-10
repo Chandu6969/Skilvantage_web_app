@@ -36,16 +36,23 @@ def _parse(d: str, field: str) -> date:
         raise HTTPException(status_code=400, detail=f"{field} must be YYYY-MM-DD")
 
 
-async def _roster() -> list[dict]:
-    return await db.students.find({"active": True}).sort("full_name", 1).to_list(1000)
+async def _roster(learner_type: Optional[str] = None) -> list[dict]:
+    query: dict = {"active": True}
+    if learner_type in ("student", "professional"):
+        query["learner_type"] = learner_type
+    return await db.students.find(query).sort("full_name", 1).to_list(1000)
 
 
 @router.get("/day", response_model=AttendanceDay)
-async def day_sheet(admin: dict = Depends(current_admin), date_: Optional[str] = Query(default=None, alias="date")):
+async def day_sheet(
+    admin: dict = Depends(current_admin),
+    date_: Optional[str] = Query(default=None, alias="date"),
+    learner_type: Optional[str] = None,
+):
     """Marking sheet for one day. Defaults to the server's today, never a browser date."""
     target = date_ or today_iso()
     _parse(target, "date")
-    students = await _roster()
+    students = await _roster(learner_type)
     existing = {
         r["student_id"]: r["code"]
         for r in await db.attendance.find({"date": target}).to_list(2000)
@@ -75,7 +82,11 @@ async def day_sheet(admin: dict = Depends(current_admin), date_: Optional[str] =
 
 
 @router.post("/save", response_model=AttendanceDay)
-async def save_marks(payload: AttendanceSaveRequest, admin: dict = Depends(current_admin)):
+async def save_marks(
+    payload: AttendanceSaveRequest,
+    admin: dict = Depends(current_admin),
+    learner_type: Optional[str] = None,
+):
     _parse(payload.date, "date")
     for mark in payload.marks:
         if mark.code not in ATTENDANCE_CODES and mark.code != "":
@@ -98,7 +109,7 @@ async def save_marks(payload: AttendanceSaveRequest, admin: dict = Depends(curre
             },
             upsert=True,
         )
-    return await day_sheet(admin=admin, date_=payload.date)
+    return await day_sheet(admin=admin, date_=payload.date, learner_type=learner_type)
 
 
 @router.post("/mark-all", response_model=AttendanceDay)
@@ -106,13 +117,14 @@ async def mark_all(
     admin: dict = Depends(current_admin),
     date_: Optional[str] = Query(default=None, alias="date"),
     code: str = Query(default="P"),
+    learner_type: Optional[str] = None,
 ):
     """Bulk-set every unmarked student for a day (e.g. mark the whole batch Present)."""
     if code not in ATTENDANCE_CODES:
         raise HTTPException(status_code=400, detail=f"Unknown attendance code '{code}'")
     target = date_ or today_iso()
     _parse(target, "date")
-    students = await _roster()
+    students = await _roster(learner_type)
     for s in students:
         await db.attendance.update_one(
             {"date": target, "student_id": s["id"]},
@@ -126,10 +138,12 @@ async def mark_all(
             },
             upsert=True,
         )
-    return await day_sheet(admin=admin, date_=target)
+    return await day_sheet(admin=admin, date_=target, learner_type=learner_type)
 
 
-async def _range_summary(date_from: str, date_to: str) -> AttendanceRangeSummary:
+async def _range_summary(
+    date_from: str, date_to: str, learner_type: Optional[str] = None
+) -> AttendanceRangeSummary:
     start = _parse(date_from, "date_from")
     end = _parse(date_to, "date_to")
     if end < start:
@@ -138,7 +152,7 @@ async def _range_summary(date_from: str, date_to: str) -> AttendanceRangeSummary
         raise HTTPException(status_code=400, detail=f"Range is limited to {MAX_RANGE_DAYS} days")
 
     dates = [(start + timedelta(days=i)).isoformat() for i in range((end - start).days + 1)]
-    students = await _roster()
+    students = await _roster(learner_type)
     records = await db.attendance.find(
         {"date": {"$gte": date_from, "$lte": date_to}}
     ).to_list(20000)
@@ -190,8 +204,9 @@ async def summary(
     admin: dict = Depends(current_admin),
     date_from: str = Query(...),
     date_to: str = Query(...),
+    learner_type: Optional[str] = None,
 ):
-    return await _range_summary(date_from, date_to)
+    return await _range_summary(date_from, date_to, learner_type)
 
 
 @router.get("/export.csv")
@@ -199,8 +214,9 @@ async def export_csv(
     admin: dict = Depends(current_admin),
     date_from: str = Query(...),
     date_to: str = Query(...),
+    learner_type: Optional[str] = None,
 ):
-    data = await _range_summary(date_from, date_to)
+    data = await _range_summary(date_from, date_to, learner_type)
     buf = io.StringIO()
     writer = csv.writer(buf)
     writer.writerow(
@@ -234,6 +250,7 @@ async def export_pdf(
     admin: dict = Depends(current_admin),
     date_from: str = Query(...),
     date_to: str = Query(...),
+    learner_type: Optional[str] = None,
 ):
     """Attendance sheet only, for the chosen range, with per-student counts and percentage."""
     from reportlab.lib import colors
@@ -243,7 +260,7 @@ async def export_pdf(
     from reportlab.lib.units import mm
     from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
-    data = await _range_summary(date_from, date_to)
+    data = await _range_summary(date_from, date_to, learner_type)
     styles = getSampleStyleSheet()
     title_style = ParagraphStyle("t", parent=styles["Title"], fontSize=16, textColor=colors.HexColor("#0B2545"))
     meta_style = ParagraphStyle("m", parent=styles["Normal"], fontSize=9, textColor=colors.HexColor("#475569"))
@@ -278,7 +295,15 @@ async def export_pdf(
 
     legend = "  ".join(f"{c} = {ATTENDANCE_LABELS[c]}" for c in ATTENDANCE_CODES)
     elements = [
-        Paragraph("SkilVantage — Attendance Sheet", title_style),
+        Paragraph(
+            "SkilVantage — Attendance Sheet"
+            + (
+                " (Working Professionals)"
+                if learner_type == "professional"
+                else " (Students)" if learner_type == "student" else ""
+            ),
+            title_style,
+        ),
         Spacer(1, 3 * mm),
         Paragraph(
             f"Period: <b>{date_from}</b> to <b>{date_to}</b> &nbsp;·&nbsp; "

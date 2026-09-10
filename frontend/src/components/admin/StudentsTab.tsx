@@ -18,30 +18,46 @@ import {
 } from "@/components/ui/select";
 import { apiDelete, apiGet, apiPost } from "@/lib/api";
 import { BRANCH_OPTIONS, PAYMENT_AMOUNTS, YEAR_OPTIONS } from "@/lib/types";
-import type { Student, StudentCreate } from "@/lib/types";
+import type { RosterType, Student, StudentCreate } from "@/lib/types";
 
-const EMPTY: StudentCreate = {
+const emptyFor = (learnerType: RosterType): StudentCreate => ({
   full_name: "",
+  learner_type: learnerType,
   phone: "",
   email: "",
-  year: YEAR_OPTIONS[3],
-  branch: BRANCH_OPTIONS[1],
+  year: learnerType === "student" ? YEAR_OPTIONS[3] : null,
+  branch: learnerType === "student" ? BRANCH_OPTIONS[1] : null,
+  company: "",
+  current_role: "",
+  experience_years: "",
+  target_role: "",
+  notice_period: "",
+  current_package: "",
   monthly_amount: PAYMENT_AMOUNTS[0],
   total_fee: null,
   active: true,
   notes: "",
-};
+});
 
-export default function StudentsTab() {
+export default function StudentsTab({
+  learnerType = "student",
+}: {
+  learnerType?: RosterType;
+}) {
+  const isPro = learnerType === "professional";
+  const noun = isPro ? "professional" : "student";
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [detailId, setDetailId] = useState<string | null>(null);
-  const [form, setForm] = useState<StudentCreate>(EMPTY);
+  const [form, setForm] = useState<StudentCreate>(emptyFor(learnerType));
 
   const students = useQuery({
-    queryKey: ["students", q],
-    queryFn: () => apiGet<Student[]>(`/admin/students${q ? `?q=${encodeURIComponent(q)}` : ""}`),
+    queryKey: ["students", learnerType, q],
+    queryFn: () =>
+      apiGet<Student[]>(
+        `/admin/students?learner_type=${learnerType}${q ? `&q=${encodeURIComponent(q)}` : ""}`,
+      ),
   });
 
   const refresh = () => {
@@ -52,14 +68,14 @@ export default function StudentsTab() {
   };
 
   const create = useMutation({
-    mutationFn: () => apiPost<Student>("/admin/students", form),
+    mutationFn: () => apiPost<Student>("/admin/students", { ...form, learner_type: learnerType }),
     onSuccess: () => {
-      toast.success("Student added");
-      setForm(EMPTY);
+      toast.success(isPro ? "Professional added" : "Student added");
+      setForm(emptyFor(learnerType));
       setOpen(false);
       refresh();
     },
-    onError: () => toast.error("Could not add the student"),
+    onError: () => toast.error(`Could not add the ${noun}`),
   });
 
   const importLeads = useMutation({
@@ -78,33 +94,35 @@ export default function StudentsTab() {
   const remove = useMutation({
     mutationFn: (id: string) => apiDelete<{ ok: boolean }>(`/admin/students/${id}`),
     onSuccess: () => {
-      toast.success("Student removed");
+      toast.success(isPro ? "Professional removed" : "Student removed");
       refresh();
     },
-    onError: () => toast.error("Could not remove the student"),
+    onError: () => toast.error(`Could not remove the ${noun}`),
   });
 
   const set = <K extends keyof StudentCreate>(k: K, v: StudentCreate[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
   return (
-    <div className="space-y-5" data-testid="students-tab">
+    <div className="space-y-5" data-testid={isPro ? "professionals-tab" : "students-tab"}>
       <Card className="border-slate-800 bg-[#111C35] p-5">
         <div className="flex flex-wrap items-end gap-3">
           <GraduationCap className="mb-2.5 h-4 w-4 text-sky-400" />
           <div className="grid gap-2">
-            <Label htmlFor="stu-search">Search students</Label>
+            <Label htmlFor="stu-search">
+              {isPro ? "Search professionals" : "Search students"}
+            </Label>
             <Input
               id="stu-search"
               className="w-64"
-              placeholder="Name, phone or email"
+              placeholder={isPro ? "Name, phone, company or role" : "Name, phone or email"}
               data-testid="students-search-input"
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
           </div>
           <Badge variant="secondary" className="mb-2 bg-[#1E2E54] text-sky-300" data-testid="students-count">
-            {students.data ? `${students.data.length} students` : "—"}
+            {students.data ? `${students.data.length} ${isPro ? "professionals" : "students"}` : "—"}
           </Badge>
           <div className="ml-auto flex flex-wrap gap-2">
             <Button
@@ -124,7 +142,7 @@ export default function StudentsTab() {
               className="bg-sky-600 hover:bg-sky-500"
               onClick={() => setOpen(true)}
             >
-              <Plus className="mr-1.5 h-3.5 w-3.5" /> Add Student
+              {isPro ? "Add Professional" : "Add Student"}
             </Button>
           </div>
         </div>
@@ -135,7 +153,10 @@ export default function StudentsTab() {
           <table className="w-full min-w-[720px] text-sm" data-testid="students-table">
             <thead>
               <tr className="border-b border-slate-800 text-left">
-                {["#", "Student", "Year", "Branch", "Phone", "Monthly", "Total Fee", ""].map((h) => (
+                {(isPro
+                  ? ["#", "Name", "Company", "Current Role", "Experience", "Phone", "Monthly", "Total Fee", ""]
+                  : ["#", "Student", "Year", "Branch", "Phone", "Monthly", "Total Fee", ""]
+                ).map((h) => (
                   <th
                     key={h}
                     className="pb-2 pr-3 font-mono text-[10px] uppercase tracking-widest text-sky-400"
@@ -154,8 +175,20 @@ export default function StudentsTab() {
                 >
                   <td className="py-2.5 pr-3 font-mono text-xs text-slate-500">{i + 1}</td>
                   <td className="py-2.5 pr-3 text-slate-100">{s.full_name}</td>
-                  <td className="py-2.5 pr-3 text-slate-400">{s.year || "—"}</td>
-                  <td className="py-2.5 pr-3 text-slate-400">{s.branch || "—"}</td>
+                  {isPro ? (
+                    <>
+                      <td className="py-2.5 pr-3 text-slate-400">{s.company || "—"}</td>
+                      <td className="py-2.5 pr-3 text-slate-400">{s.current_role || "—"}</td>
+                      <td className="py-2.5 pr-3 text-slate-400">
+                        {s.experience_years ? `${s.experience_years} yrs` : "—"}
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td className="py-2.5 pr-3 text-slate-400">{s.year || "—"}</td>
+                      <td className="py-2.5 pr-3 text-slate-400">{s.branch || "—"}</td>
+                    </>
+                  )}
                   <td className="py-2.5 pr-3 text-slate-400">{s.phone || "—"}</td>
                   <td className="py-2.5 pr-3 text-slate-400">
                     {s.monthly_amount != null ? `₹${s.monthly_amount}` : "—"}
@@ -190,7 +223,9 @@ export default function StudentsTab() {
         </div>
         {students.data && students.data.length === 0 && (
           <p className="py-10 text-center text-sm text-slate-500" data-testid="students-empty-state">
-            No students yet. Add one or import your registered leads.
+            {isPro
+              ? "No working professionals yet. Add one or import your registered leads."
+              : "No students yet. Add one or import your registered leads."}
           </p>
         )}
       </Card>
@@ -200,7 +235,9 @@ export default function StudentsTab() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-lg" data-testid="student-create-dialog">
           <DialogHeader>
-            <DialogTitle className="font-heading">Add student</DialogTitle>
+            <DialogTitle className="font-heading">
+              {isPro ? "Add working professional" : "Add student"}
+            </DialogTitle>
           </DialogHeader>
           <form
             className="grid gap-4 sm:grid-cols-2"
@@ -238,32 +275,95 @@ export default function StudentsTab() {
                 onChange={(e) => set("email", e.target.value)}
               />
             </div>
-            <div className="grid gap-2">
-              <Label>Year</Label>
-              <Select value={form.year ?? ""} onValueChange={(v: string) => set("year", v)}>
-                <SelectTrigger data-testid="student-year-select">
-                  <SelectValue>{(v) => (v as string) || "Select"}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {YEAR_OPTIONS.map((y) => (
-                    <SelectItem key={y} value={y}>{y}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2">
-              <Label>Branch</Label>
-              <Select value={form.branch ?? ""} onValueChange={(v: string) => set("branch", v)}>
-                <SelectTrigger data-testid="student-branch-select">
-                  <SelectValue>{(v) => (v as string) || "Select"}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {BRANCH_OPTIONS.map((br) => (
-                    <SelectItem key={br} value={br}>{br}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {isPro ? (
+              <>
+                <div className="grid gap-2">
+                  <Label htmlFor="stu-company">Current company</Label>
+                  <Input
+                    id="stu-company"
+                    data-testid="student-company-input"
+                    value={form.company ?? ""}
+                    onChange={(e) => set("company", e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="stu-role">Current role</Label>
+                  <Input
+                    id="stu-role"
+                    data-testid="student-current-role-input"
+                    value={form.current_role ?? ""}
+                    onChange={(e) => set("current_role", e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="stu-exp">Experience (years)</Label>
+                  <Input
+                    id="stu-exp"
+                    data-testid="student-experience-input"
+                    value={form.experience_years ?? ""}
+                    onChange={(e) => set("experience_years", e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="stu-target">Target role</Label>
+                  <Input
+                    id="stu-target"
+                    data-testid="student-target-role-input"
+                    value={form.target_role ?? ""}
+                    onChange={(e) => set("target_role", e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="stu-notice">Notice period</Label>
+                  <Input
+                    id="stu-notice"
+                    placeholder="60 days"
+                    data-testid="student-notice-period-input"
+                    value={form.notice_period ?? ""}
+                    onChange={(e) => set("notice_period", e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="stu-package">Current package</Label>
+                  <Input
+                    id="stu-package"
+                    placeholder="6 LPA"
+                    data-testid="student-current-package-input"
+                    value={form.current_package ?? ""}
+                    onChange={(e) => set("current_package", e.target.value)}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="grid gap-2">
+                  <Label>Year</Label>
+                  <Select value={form.year ?? ""} onValueChange={(v: string) => set("year", v)}>
+                    <SelectTrigger data-testid="student-year-select">
+                      <SelectValue>{(v) => (v as string) || "Select"}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {YEAR_OPTIONS.map((y) => (
+                        <SelectItem key={y} value={y}>{y}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Branch</Label>
+                  <Select value={form.branch ?? ""} onValueChange={(v: string) => set("branch", v)}>
+                    <SelectTrigger data-testid="student-branch-select">
+                      <SelectValue>{(v) => (v as string) || "Select"}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BRANCH_OPTIONS.map((br) => (
+                        <SelectItem key={br} value={br}>{br}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
             <div className="grid gap-2">
               <Label htmlFor="stu-monthly">Monthly amount (₹)</Label>
               <Input
@@ -294,7 +394,7 @@ export default function StudentsTab() {
               data-testid="student-create-submit"
               className="bg-sky-600 hover:bg-sky-500 sm:col-span-2"
             >
-              {create.isPending ? "Adding…" : "Add student"}
+              {create.isPending ? "Adding…" : isPro ? "Add professional" : "Add student"}
             </Button>
           </form>
         </DialogContent>

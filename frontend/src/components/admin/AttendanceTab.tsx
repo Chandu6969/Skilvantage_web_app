@@ -11,7 +11,7 @@ import { ApiError, apiGet, apiPost } from "@/lib/api";
 import HolidayCalendarCard from "@/components/admin/HolidayCalendarCard";
 import StudentDetailDialog from "@/components/admin/StudentDetailDialog";
 import { ATTENDANCE_CODES, ATTENDANCE_LABELS } from "@/lib/types";
-import type { AttendanceDay, AttendanceRangeSummary } from "@/lib/types";
+import type { AttendanceDay, AttendanceRangeSummary, RosterType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const CODE_STYLE: Record<string, string> = {
@@ -28,7 +28,11 @@ function firstOfMonth(iso: string) {
   return `${iso.slice(0, 7)}-01`;
 }
 
-export default function AttendanceTab() {
+export default function AttendanceTab({
+  learnerType = "student",
+}: {
+  learnerType?: RosterType;
+}) {
   const qc = useQueryClient();
   const [day, setDay] = useState<string>("");
   const [detailId, setDetailId] = useState<string | null>(null);
@@ -37,8 +41,11 @@ export default function AttendanceTab() {
 
   // The server owns "today" — the sheet loads without a date and reports the date it used.
   const sheet = useQuery({
-    queryKey: ["attendance-day", day],
-    queryFn: () => apiGet<AttendanceDay>(`/admin/attendance/day${day ? `?date=${day}` : ""}`),
+    queryKey: ["attendance-day", learnerType, day],
+    queryFn: () =>
+      apiGet<AttendanceDay>(
+        `/admin/attendance/day?learner_type=${learnerType}${day ? `&date=${day}` : ""}`,
+      ),
   });
 
   const activeDate = sheet.data?.date ?? "";
@@ -46,10 +53,10 @@ export default function AttendanceTab() {
   const to = range.to || activeDate;
 
   const summary = useQuery({
-    queryKey: ["attendance-summary", from, to],
+    queryKey: ["attendance-summary", learnerType, from, to],
     queryFn: () =>
       apiGet<AttendanceRangeSummary>(
-        `/admin/attendance/summary?date_from=${from}&date_to=${to}`,
+        `/admin/attendance/summary?date_from=${from}&date_to=${to}&learner_type=${learnerType}`,
       ),
     enabled: !!from && !!to,
   });
@@ -75,7 +82,7 @@ export default function AttendanceTab() {
   const markAll = useMutation({
     mutationFn: (code: string) =>
       apiPost<AttendanceDay>(
-        `/admin/attendance/mark-all?code=${code}${activeDate ? `&date=${activeDate}` : ""}`,
+        `/admin/attendance/mark-all?code=${code}&learner_type=${learnerType}${activeDate ? `&date=${activeDate}` : ""}`,
       ),
     onSuccess: (d) => {
       toast.success(`All ${d.total} students marked`);
@@ -91,11 +98,11 @@ export default function AttendanceTab() {
     return q ? all.filter((r) => r.full_name.toLowerCase().includes(q)) : all;
   }, [sheet.data, search]);
 
-  const pdfHref = `/api/admin/attendance/export.pdf?date_from=${from}&date_to=${to}`;
-  const csvHref = `/api/admin/attendance/export.csv?date_from=${from}&date_to=${to}`;
+  const pdfHref = `/api/admin/attendance/export.pdf?date_from=${from}&date_to=${to}&learner_type=${learnerType}`;
+  const csvHref = `/api/admin/attendance/export.csv?date_from=${from}&date_to=${to}&learner_type=${learnerType}`;
 
   return (
-    <div className="space-y-5" data-testid="attendance-tab">
+    <div className="space-y-5" data-testid={learnerType === "professional" ? "attendance-tab-professional" : "attendance-tab"}>
       <StudentDetailDialog studentId={detailId} onClose={() => setDetailId(null)} />
 
       {/* DATE + BULK CONTROLS */}
@@ -170,10 +177,11 @@ export default function AttendanceTab() {
         <div className="flex flex-wrap items-center gap-3">
           <Users className="h-4 w-4 text-sky-400" />
           <h3 className="font-heading text-sm font-semibold text-slate-100">
-            Mark attendance — {activeDate || "…"}
+            {learnerType === "professional" ? "Mark professional attendance" : "Mark attendance"} —{" "}
+            {activeDate || "…"}
           </h3>
           <Input
-            placeholder="Search student"
+            placeholder={learnerType === "professional" ? "Search professional" : "Search student"}
             className="ml-auto w-56"
             data-testid="attendance-search-input"
             value={search}
@@ -232,7 +240,9 @@ export default function AttendanceTab() {
           ))}
           {sheet.data && rows.length === 0 && (
             <p className="py-10 text-center text-sm text-slate-500" data-testid="attendance-empty-state">
-              No students found. Add students in the Students tab first.
+              {learnerType === "professional"
+                ? "No working professionals found. Add them in the Professionals tab first."
+                : "No students found. Add students in the Students tab first."}
             </p>
           )}
         </div>

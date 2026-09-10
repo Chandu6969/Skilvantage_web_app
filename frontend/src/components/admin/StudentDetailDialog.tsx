@@ -50,15 +50,31 @@ export default function StudentDetailDialog({
           <div className="space-y-6">
             {/* PROFILE */}
             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
-              <Badge variant="secondary" className="bg-[#1E2E54] text-sky-300">
-                {[d.student.year, d.student.branch].filter(Boolean).join(" · ") || "—"}
+              <Badge variant="secondary" className="bg-sky-500/15 text-sky-300">
+                {d.student.learner_type === "professional" ? "Working Professional" : "Student"}
               </Badge>
+              <Badge variant="secondary" className="bg-[#1E2E54] text-sky-300">
+                {(d.student.learner_type === "professional"
+                  ? [d.student.company, d.student.current_role]
+                  : [d.student.year, d.student.branch]
+                )
+                  .filter(Boolean)
+                  .join(" · ") || "—"}
+              </Badge>
+              {d.student.learner_type === "professional" && d.student.experience_years && (
+                <span>{d.student.experience_years} yrs exp</span>
+              )}
+              {d.student.learner_type === "professional" && d.student.target_role && (
+                <span>→ {d.student.target_role}</span>
+              )}
               {d.student.phone && (
                 <span className="inline-flex items-center gap-1.5">
                   <Phone className="h-3.5 w-3.5" /> {d.student.phone}
                 </span>
               )}
               {d.student.email && <span>{d.student.email}</span>}
+              {d.student.notice_period && <span>Notice: {d.student.notice_period}</span>}
+              {d.student.current_package && <span>Current: {d.student.current_package}</span>}
             </div>
 
             {/* SUMMARY CARDS */}

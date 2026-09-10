@@ -204,14 +204,23 @@ export const BRANCH_OPTIONS = [
   "Other",
 ];
 
+export type RosterType = "student" | "professional";
+
 export interface Student {
   id: string;
   full_name: string;
+  learner_type: RosterType;
   phone?: string | null;
   email?: string | null;
   year?: string | null;
   branch?: string | null;
   program?: string | null;
+  company?: string | null;
+  current_role?: string | null;
+  experience_years?: string | null;
+  target_role?: string | null;
+  notice_period?: string | null;
+  current_package?: string | null;
   total_fee?: number | null;
   monthly_amount?: number | null;
   active: boolean;
@@ -222,10 +231,17 @@ export interface Student {
 
 export interface StudentCreate {
   full_name: string;
+  learner_type: RosterType;
   phone?: string | null;
   email?: string | null;
   year?: string | null;
   branch?: string | null;
+  company?: string | null;
+  current_role?: string | null;
+  experience_years?: string | null;
+  target_role?: string | null;
+  notice_period?: string | null;
+  current_package?: string | null;
   total_fee?: number | null;
   monthly_amount?: number | null;
   active?: boolean;

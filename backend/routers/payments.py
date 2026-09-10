@@ -3,6 +3,7 @@
 import csv
 import io
 from datetime import datetime
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
@@ -35,9 +36,12 @@ def _clean(doc: dict) -> dict:
     return doc
 
 
-async def _board(month: str) -> PaymentBoard:
+async def _board(month: str, learner_type: Optional[str] = None) -> PaymentBoard:
     _check_month(month)
-    students = await db.students.find({"active": True}).sort("full_name", 1).to_list(1000)
+    query: dict = {"active": True}
+    if learner_type in ("student", "professional"):
+        query["learner_type"] = learner_type
+    students = await db.students.find(query).sort("full_name", 1).to_list(1000)
     ids = [s["id"] for s in students]
 
     this_month = {
@@ -112,8 +116,9 @@ async def _board(month: str) -> PaymentBoard:
 async def payment_board(
     admin: dict = Depends(current_admin),
     month: str = Query(default_factory=lambda: today_iso()[:7]),
+    learner_type: Optional[str] = None,
 ):
-    return await _board(month)
+    return await _board(month, learner_type)
 
 
 @router.post("", response_model=PaymentRecord)
@@ -147,8 +152,12 @@ async def upsert_payment(payload: PaymentUpsert, admin: dict = Depends(current_a
 
 
 @router.get("/export.csv")
-async def export_csv(admin: dict = Depends(current_admin), month: str = Query(...)):
-    board = await _board(month)
+async def export_csv(
+    admin: dict = Depends(current_admin),
+    month: str = Query(...),
+    learner_type: Optional[str] = None,
+):
+    board = await _board(month, learner_type)
     buf = io.StringIO()
     writer = csv.writer(buf)
     writer.writerow(
@@ -175,7 +184,11 @@ async def export_csv(admin: dict = Depends(current_admin), month: str = Query(..
 
 
 @router.get("/export.pdf")
-async def export_pdf(admin: dict = Depends(current_admin), month: str = Query(...)):
+async def export_pdf(
+    admin: dict = Depends(current_admin),
+    month: str = Query(...),
+    learner_type: Optional[str] = None,
+):
     from reportlab.lib import colors
     from reportlab.lib.enums import TA_RIGHT
     from reportlab.lib.pagesizes import A4, landscape
@@ -183,7 +196,7 @@ async def export_pdf(admin: dict = Depends(current_admin), month: str = Query(..
     from reportlab.lib.units import mm
     from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
-    board = await _board(month)
+    board = await _board(month, learner_type)
     styles = getSampleStyleSheet()
     title_style = ParagraphStyle("t", parent=styles["Title"], fontSize=16, textColor=colors.HexColor("#0B2545"))
     meta = ParagraphStyle("m", parent=styles["Normal"], fontSize=9, textColor=colors.HexColor("#475569"))

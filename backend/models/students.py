@@ -2,9 +2,11 @@
 
 import uuid
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
+
+LearnerRosterType = Literal["student", "professional"]
 
 # Codes match the user's attendance register.
 ATTENDANCE_CODES = ["P", "A", "L", "LT", "H", "NC", "T"]
@@ -51,11 +53,22 @@ def _now() -> datetime:
 
 class StudentCreate(BaseModel):
     full_name: str = Field(min_length=2, max_length=120)
+    # "student" = college student / fresher, "professional" = working professional.
+    # Drives the separate attendance registers and payment boards.
+    learner_type: LearnerRosterType = "student"
     phone: Optional[str] = None
     email: Optional[str] = None
+    # Student fields
     year: Optional[str] = None
     branch: Optional[str] = None
     program: Optional[str] = None
+    # Working-professional fields
+    company: Optional[str] = None
+    current_role: Optional[str] = None
+    experience_years: Optional[str] = None
+    target_role: Optional[str] = None
+    notice_period: Optional[str] = None
+    current_package: Optional[str] = None
     total_fee: Optional[float] = Field(default=None, ge=0)
     monthly_amount: Optional[float] = Field(default=None, ge=0)
     active: bool = True

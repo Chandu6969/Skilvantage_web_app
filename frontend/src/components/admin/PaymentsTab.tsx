@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { apiGet, apiPost } from "@/lib/api";
 import { PAYMENT_AMOUNTS } from "@/lib/types";
-import type { PaymentBoard, PaymentRow } from "@/lib/types";
+import type { PaymentBoard, PaymentRow, RosterType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const METHODS = ["UPI", "Cash", "Bank Transfer", "Card", "Other"];
@@ -194,15 +194,22 @@ function PaymentCard({
   );
 }
 
-export default function PaymentsTab() {
+export default function PaymentsTab({
+  learnerType = "student",
+}: {
+  learnerType?: RosterType;
+}) {
   const qc = useQueryClient();
   const [month, setMonth] = useState<string>("");
   const [filter, setFilter] = useState<"all" | "paid" | "pending">("all");
   const [search, setSearch] = useState("");
 
   const board = useQuery({
-    queryKey: ["payments", month],
-    queryFn: () => apiGet<PaymentBoard>(`/admin/payments${month ? `?month=${month}` : ""}`),
+    queryKey: ["payments", learnerType, month],
+    queryFn: () =>
+      apiGet<PaymentBoard>(
+        `/admin/payments?learner_type=${learnerType}${month ? `&month=${month}` : ""}`,
+      ),
   });
 
   const activeMonth = board.data?.month ?? "";
@@ -227,7 +234,7 @@ export default function PaymentsTab() {
   const b = board.data;
 
   return (
-    <div className="space-y-5" data-testid="payments-tab">
+    <div className="space-y-5" data-testid={learnerType === "professional" ? "payments-tab-professional" : "payments-tab"}>
       <Card className="border-slate-800 bg-[#111C35] p-5">
         <div className="flex flex-wrap items-end gap-4">
           <Wallet className="mb-2.5 h-4 w-4 text-sky-400" />
@@ -270,14 +277,14 @@ export default function PaymentsTab() {
           </div>
           <div className="ml-auto flex flex-wrap gap-2">
             <a
-              href={`/api/admin/payments/export.pdf?month=${activeMonth}`}
+              href={`/api/admin/payments/export.pdf?month=${activeMonth}&learner_type=${learnerType}`}
               data-testid="payments-download-pdf"
               className="inline-flex items-center gap-2 rounded-md bg-sky-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-sky-500"
             >
               <FileDown className="h-3.5 w-3.5" /> PDF
             </a>
             <a
-              href={`/api/admin/payments/export.csv?month=${activeMonth}`}
+              href={`/api/admin/payments/export.csv?month=${activeMonth}&learner_type=${learnerType}`}
               data-testid="payments-download-csv"
               className="inline-flex items-center gap-2 rounded-md border border-sky-500/40 px-4 py-2 text-xs font-medium text-sky-200 transition-colors hover:bg-sky-500/10"
             >

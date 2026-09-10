@@ -336,19 +336,40 @@ function Dashboard({ user, onLogout }: { user: AdminUser; onLogout: () => void }
             <TabsTrigger value="attendance" data-testid="admin-tab-attendance">Attendance</TabsTrigger>
             <TabsTrigger value="payments" data-testid="admin-tab-payments">Payments</TabsTrigger>
             <TabsTrigger value="students" data-testid="admin-tab-students">Students</TabsTrigger>
+            <TabsTrigger value="pro-attendance" data-testid="admin-tab-pro-attendance">
+              Pro Attendance
+            </TabsTrigger>
+            <TabsTrigger value="pro-payments" data-testid="admin-tab-pro-payments">
+              Pro Payments
+            </TabsTrigger>
+            <TabsTrigger value="professionals" data-testid="admin-tab-professionals">
+              Professionals
+            </TabsTrigger>
             <TabsTrigger value="batches" data-testid="admin-tab-batches">Batches</TabsTrigger>
           </TabsList>
 
           <TabsContent value="attendance" className="mt-6">
-            <AttendanceTab />
+            <AttendanceTab learnerType="student" />
           </TabsContent>
 
           <TabsContent value="payments" className="mt-6">
-            <PaymentsTab />
+            <PaymentsTab learnerType="student" />
           </TabsContent>
 
           <TabsContent value="students" className="mt-6">
-            <StudentsTab />
+            <StudentsTab learnerType="student" />
+          </TabsContent>
+
+          <TabsContent value="pro-attendance" className="mt-6">
+            <AttendanceTab learnerType="professional" />
+          </TabsContent>
+
+          <TabsContent value="pro-payments" className="mt-6">
+            <PaymentsTab learnerType="professional" />
+          </TabsContent>
+
+          <TabsContent value="professionals" className="mt-6">
+            <StudentsTab learnerType="professional" />
           </TabsContent>
 
           <TabsContent value="follow-ups" className="mt-6">
@@ -492,6 +513,11 @@ function Dashboard({ user, onLogout }: { user: AdminUser; onLogout: () => void }
                     ["Current role", selected.current_role],
                     ["Experience", selected.experience_years],
                     ["Target role", selected.target_role],
+                    ["Notice period", selected.notice_period],
+                    ["Career change reason", selected.career_change_reason],
+                    ["Industry", selected.industry],
+                    ["Current package", selected.current_package],
+                    ["Batch timing", selected.batch_timing],
                     ["Learning mode", selected.learning_mode],
                     ["Expected package", selected.expected_package],
                     ["LinkedIn", selected.linkedin],
