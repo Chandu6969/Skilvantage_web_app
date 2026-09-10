@@ -2,6 +2,7 @@
 
 import asyncio
 import random
+import sys
 from datetime import datetime, timedelta, timezone
 
 from lib.auth import hash_password
@@ -26,6 +27,8 @@ DEMO = [
 
 
 async def main() -> None:
+    admin_only = "--admin-only" in sys.argv
+
     await db.admin_users.update_one(
         {"email": ADMIN_EMAIL},
         {
@@ -38,6 +41,11 @@ async def main() -> None:
         },
         upsert=True,
     )
+
+    if admin_only:
+        await ensure_indexes()
+        print(f"Seeded admin {ADMIN_EMAIL} / {ADMIN_PASSWORD} (admin only, no demo data).")
+        return
 
     random.seed(7)
     now = datetime.now(timezone.utc)

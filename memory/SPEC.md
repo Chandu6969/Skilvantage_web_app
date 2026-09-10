@@ -10,6 +10,15 @@ management.
 FastAPI + MongoDB (motor) behind Vite + React 19 + TS. All routes on `api_router` under `/api`.
 Frontend calls relative `/api` paths through `src/lib/api.ts`.
 
+## Database — user's own MongoDB Atlas
+Registrations are persisted **only in MongoDB**, in the user's Atlas cluster
+`cluster0.yuirkrz.mongodb.net`, database `skilvantage`, set via `MONGO_URL`/`DB_NAME` in
+`backend/.env`. Atlas requires the pod's egress IP on its Network Access list — a
+`TLSV1_ALERT_INTERNAL_ERROR` / `alert number 80` on connect means the IP is blocked (add
+`0.0.0.0/0`), not a code fault. Helpers: `backend/check_atlas.py` (connectivity),
+`backend/check_atlas_data.py` (dump what is stored). `backend/.env.bak` holds the local-Mongo
+fallback.
+
 ## Data model (MongoDB, string uuid `id`)
 - `registrations` — one doc per registration. `registration_id` (SVS/SVP + yy + 5 digits, unique),
   `learner_type` ("student" | "professional"), `program` (slug), personal/academic/technical/career
@@ -71,10 +80,12 @@ JSON, no localStorage. Every `/api/admin/*` route depends on `current_admin`.
    recharts bar + line charts, filterable table, lead dialog with status/notes/follow-up + resume
    download + CSV export).
 
-## Seed facts (`cd /app/backend && python seed.py`, idempotent)
+## Seed facts
+- `cd /app/backend && python seed.py --admin-only` → admin account only, no demo data
+  (this is what was run against Atlas; the cluster starts clean by the user's choice).
+- `python seed.py` (no flag) additionally inserts 8 demo registrations `SVS25DEMO00`…`SVP25DEMO07`
+  and 1 demo enquiry — useful locally, NOT applied to the user's Atlas cluster.
 - Admin: admin@skilvantage.com / SkilVantage@2025
-- 8 demo registrations, ids `SVS25DEMO00`…`SVP25DEMO07` (mixed learner types, programs, statuses).
-- 1 demo enquiry from Divya Raman.
 
 ## Content rules
 - Every program is positioned **"Beginner to Advanced"** — no program is labelled beginner-only or
