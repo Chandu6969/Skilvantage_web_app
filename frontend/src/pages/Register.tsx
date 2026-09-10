@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -106,12 +107,12 @@ export default function Register() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const preselect = params.get("program");
+  const preselected = !!(preselect && programBySlug(preselect));
 
-  const [step, setStep] = useState(preselect && programBySlug(preselect) ? 2 : 0);
+  // Always start on the learner-type radio step; a preselected program only skips step 1.
+  const [step, setStep] = useState(0);
   const [learnerType, setLearnerType] = useState<LearnerType>("student");
-  const [program, setProgram] = useState(
-    preselect && programBySlug(preselect) ? preselect : PROGRAMS[0].slug,
-  );
+  const [program, setProgram] = useState(preselected ? (preselect as string) : PROGRAMS[0].slug);
   const [form, setForm] = useState<Record<string, string>>({});
   const [consent, setConsent] = useState(false);
   const [resume, setResume] = useState<UploadResult | null>(null);
@@ -217,32 +218,60 @@ export default function Register() {
               <h2 className="font-heading text-xl font-bold text-slate-100 sm:text-2xl">
                 Select Your Learner Type
               </h2>
-              <div className="mt-8 grid gap-5 sm:grid-cols-2">
+              <p className="mt-2 text-sm text-slate-400">
+                Choose one — the registration form is tailored to your answer.
+              </p>
+
+              <RadioGroup
+                value={learnerType}
+                onValueChange={(v) => setLearnerType(v as LearnerType)}
+                className="mt-8 grid gap-4 sm:grid-cols-2"
+                data-testid="learner-type-radio-group"
+              >
                 {(
                   [
                     { v: "student", t: "Student / Fresher", i: GraduationCap, d: "College students, final-year students, graduates and career starters." },
                     { v: "professional", t: "Working Professional", i: Briefcase, d: "IT and non-IT professionals growing or changing their career track." },
                   ] as const
                 ).map((o) => (
-                  <button
+                  <label
                     key={o.v}
-                    type="button"
+                    htmlFor={`learner-type-${o.v}`}
                     data-testid={`learner-type-${o.v}`}
-                    onClick={() => {
-                      setLearnerType(o.v);
-                      setStep(1);
-                    }}
                     className={cn(
-                      "rounded-xl border p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-sky-400/60 hover:shadow-[0_0_25px_rgba(56,189,248,0.18)]",
-                      learnerType === o.v ? "border-sky-500/60 bg-[#111C35]" : "border-slate-800 bg-[#0D1527]",
+                      "cursor-pointer rounded-xl border p-6 transition-all duration-300 hover:border-sky-400/60 hover:shadow-[0_0_25px_rgba(56,189,248,0.18)]",
+                      learnerType === o.v
+                        ? "border-sky-500/60 bg-[#111C35]"
+                        : "border-slate-800 bg-[#0D1527]",
                     )}
                   >
-                    <o.i className="h-7 w-7 text-sky-400" />
-                    <p className="mt-4 font-heading text-lg font-semibold text-slate-100">{o.t}</p>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-400">{o.d}</p>
-                  </button>
+                    <div className="flex items-start gap-4">
+                      <RadioGroupItem
+                        id={`learner-type-${o.v}`}
+                        value={o.v}
+                        data-testid={`learner-type-radio-${o.v}`}
+                        className="mt-1"
+                      />
+                      <div>
+                        <o.i className="h-6 w-6 text-sky-400" />
+                        <p className="mt-3 font-heading text-lg font-semibold text-slate-100">
+                          {o.t}
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed text-slate-400">{o.d}</p>
+                      </div>
+                    </div>
+                  </label>
                 ))}
-              </div>
+              </RadioGroup>
+
+              <Button
+                size="lg"
+                data-testid="learner-type-continue"
+                className="mt-8 w-full bg-sky-600 hover:bg-sky-500 active:scale-[0.98] sm:w-auto"
+                onClick={() => setStep(preselected ? 2 : 1)}
+              >
+                Continue <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </div>
           )}
 
@@ -300,7 +329,7 @@ export default function Register() {
                   variant="outline"
                   size="sm"
                   className="border-slate-700 text-slate-300"
-                  onClick={() => setStep(1)}
+                  onClick={() => setStep(0)}
                   data-testid="register-change-program"
                 >
                   Change

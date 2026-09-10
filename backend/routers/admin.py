@@ -18,16 +18,20 @@ from lib.auth import (
     destroy_session,
     verify_password,
 )
+from lib import email_service, sheets
 from lib.db import db
+from models.batches import FollowUpBoard, FollowUpItem
 from models.leads import (
     AdminStats,
     AdminUser,
     CountItem,
     Enquiry,
+    IntegrationStatus,
     LEAD_STATUSES,
     LoginRequest,
     Registration,
     RegistrationUpdate,
+    SyncResult,
 )
 
 router = APIRouter(prefix="/admin")
@@ -164,6 +168,95 @@ async def update_registration(
 async def list_enquiries(admin: dict = Depends(current_admin)):
     docs = await db.enquiries.find().sort("created_at", -1).to_list(500)
     return [Enquiry(**_clean(d)) for d in docs]
+
+
+@router.get("/follow-ups", response_model=FollowUpBoard)
+async def follow_up_board(admin: dict = Depends(current_admin)):
+    """Daily worklist: overdue / today / upcoming, driven by follow_up_date."""
+    docs = [
+        _clean(d)
+        for d in await db.registrations.find(
+            {"follow_up_date": {"$nin": [None, ""]}, "status": {"$nin": ["Not Interested", "Completed"]}}
+        ).to_list(2000)
+    ]
+    today = datetime.now(timezone.utc).date().isoformat()
+
+    def item(d: dict, bucket: str) -> FollowUpItem:
+        return FollowUpItem(
+            registration_id=d["registration_id"],
+            full_name=d.get("full_name", ""),
+            phone=d.get("phone", ""),
+            email=d.get("email", ""),
+            program=d.get("program", ""),
+            learner_type=d.get("learner_type", "student"),
+            status=d.get("status", "New"),
+            follow_up_date=d.get("follow_up_date", ""),
+            notes=d.get("notes") or "",
+            bucket=bucket,
+        )
+
+    overdue, due_today, upcoming = [], [], []
+    for d in docs:
+        date = str(d.get("follow_up_date", ""))
+        if date < today:
+            overdue.append(item(d, "overdue"))
+        elif date == today:
+            due_today.append(item(d, "today"))
+        else:
+            upcoming.append(item(d, "upcoming"))
+
+    overdue.sort(key=lambda i: i.follow_up_date)
+    due_today.sort(key=lambda i: i.full_name)
+    upcoming.sort(key=lambda i: i.follow_up_date)
+
+    unscheduled = await db.registrations.count_documents(
+        {
+            "$or": [{"follow_up_date": None}, {"follow_up_date": ""}],
+            "status": {"$in": ["New", "Contacted", "Follow-up Required"]},
+        }
+    )
+    return FollowUpBoard(
+        today=due_today, overdue=overdue, upcoming=upcoming, unscheduled=unscheduled
+    )
+
+
+@router.get("/integrations", response_model=IntegrationStatus)
+async def integration_status(admin: dict = Depends(current_admin)):
+    configured = sheets.is_configured()
+    return IntegrationStatus(
+        sheets_configured=configured,
+        sheets_account_email=sheets.service_account_email(),
+        sheets_spreadsheet_id=sheets.spreadsheet_id() or None,
+        email_configured=email_service.is_configured(),
+        email_sender=email_service.sender() if email_service.is_configured() else None,
+    )
+
+
+@router.post("/sheets/resync", response_model=SyncResult)
+async def resync_sheets(admin: dict = Depends(current_admin)):
+    """Backfill every registration + enquiry into Google Sheets."""
+    if not sheets.is_configured():
+        raise HTTPException(status_code=400, detail="Google Sheets is not configured")
+    regs = [_clean(d) for d in await db.registrations.find().sort("created_at", 1).to_list(5000)]
+    students = [d for d in regs if d.get("learner_type") == "student"]
+    pros = [d for d in regs if d.get("learner_type") != "student"]
+    enquiries = [_clean(d) for d in await db.enquiries.find().sort("created_at", 1).to_list(2000)]
+
+    total = 0
+    details = []
+    for tab, docs in (
+        (sheets.STUDENT_TAB, students),
+        (sheets.PROFESSIONAL_TAB, pros),
+        (sheets.ENQUIRY_TAB, enquiries),
+    ):
+        res = await sheets.append_rows(tab, docs)
+        total += res["synced"]
+        if not res["ok"] and docs:
+            details.append(f"{tab}: {res['detail']}")
+
+    if details:
+        raise HTTPException(status_code=502, detail="; ".join(details))
+    return SyncResult(ok=True, synced=total, detail=f"Backfilled {total} rows into Google Sheets")
 
 
 EXPORT_FIELDS = [

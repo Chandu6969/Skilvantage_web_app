@@ -99,6 +99,75 @@ export interface CountItem {
   count: number;
 }
 
+export interface IntegrationStatus {
+  sheets_configured: boolean;
+  sheets_account_email?: string | null;
+  sheets_spreadsheet_id?: string | null;
+  email_configured: boolean;
+  email_sender?: string | null;
+}
+
+export interface SyncResult {
+  ok: boolean;
+  synced: number;
+  detail: string;
+}
+
+export interface Batch {
+  id: string;
+  name: string;
+  program: string;
+  mode: string;
+  timing: string;
+  start_date: string;
+  capacity: number;
+  status: string;
+  created_at: string;
+  enrolled: number;
+}
+
+export interface BatchCreate {
+  name: string;
+  program: string;
+  mode: string;
+  timing: string;
+  start_date: string;
+  capacity: number;
+  status: string;
+}
+
+export interface BatchMember {
+  registration_id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  learner_type: string;
+  status: string;
+}
+
+export interface FollowUpItem {
+  registration_id: string;
+  full_name: string;
+  phone: string;
+  email: string;
+  program: string;
+  learner_type: string;
+  status: string;
+  follow_up_date: string;
+  notes: string;
+  bucket: string;
+}
+
+export interface FollowUpBoard {
+  today: FollowUpItem[];
+  overdue: FollowUpItem[];
+  upcoming: FollowUpItem[];
+  unscheduled: number;
+}
+
+export const BATCH_MODES = ["Online", "Offline", "Hybrid"];
+export const BATCH_STATUSES = ["Planned", "Enrolling", "Running", "Completed", "Cancelled"];
+
 export interface AdminStats {
   total_leads: number;
   student_leads: number;

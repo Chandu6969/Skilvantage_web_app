@@ -141,6 +141,20 @@ class CountItem(BaseModel):
     count: int
 
 
+class IntegrationStatus(BaseModel):
+    sheets_configured: bool
+    sheets_account_email: Optional[str] = None
+    sheets_spreadsheet_id: Optional[str] = None
+    email_configured: bool
+    email_sender: Optional[str] = None
+
+
+class SyncResult(BaseModel):
+    ok: bool
+    synced: int
+    detail: str
+
+
 class AdminStats(BaseModel):
     total_leads: int
     student_leads: int

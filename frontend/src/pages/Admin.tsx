@@ -12,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Download, LogOut, Search, ShieldCheck } from "lucide-react";
+import { Download, LogOut, RefreshCw, Search, ShieldCheck, Sheet } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,10 +41,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import FollowUpsTab from "@/components/admin/FollowUpsTab";
+import BatchesTab from "@/components/admin/BatchesTab";
 import { ApiError, apiGet, apiPatch, apiPost } from "@/lib/api";
 import { PROGRAMS, PROGRAM_LABEL } from "@/lib/programs";
 import { LEAD_STATUSES } from "@/lib/types";
-import type { AdminStats, AdminUser, Registration } from "@/lib/types";
+import type {
+  AdminStats,
+  AdminUser,
+  IntegrationStatus,
+  Registration,
+  SyncResult,
+} from "@/lib/types";
 
 const CHART_COLORS = ["#38BDF8", "#6366F1", "#10B981", "#F59E0B", "#06B6D4"];
 
@@ -120,6 +129,72 @@ function StatCard({ label, value, testid }: { label: string; value: string | num
     >
       <p className="font-mono text-[10px] uppercase tracking-widest text-sky-400">{label}</p>
       <p className="mt-2 font-heading text-2xl font-bold text-slate-50">{value}</p>
+    </Card>
+  );
+}
+
+function IntegrationsPanel() {
+  const status = useQuery({
+    queryKey: ["admin-integrations"],
+    queryFn: () => apiGet<IntegrationStatus>("/admin/integrations"),
+  });
+
+  const resync = useMutation({
+    mutationFn: () => apiPost<SyncResult>("/admin/sheets/resync"),
+    onSuccess: (r) => toast.success(r.detail),
+    onError: (e) =>
+      toast.error(
+        e instanceof ApiError && e.body && typeof e.body === "object"
+          ? String((e.body as { detail?: unknown }).detail ?? "Resync failed")
+          : "Resync failed",
+      ),
+  });
+
+  const s = status.data;
+  const sheetsOn = !!s?.sheets_configured;
+
+  return (
+    <Card className="border-slate-800 bg-[#111C35] p-5" data-testid="admin-integrations-panel">
+      <div className="flex flex-wrap items-center gap-3">
+        <Sheet className="h-4 w-4 text-sky-400" />
+        <h2 className="font-heading text-sm font-semibold text-slate-100">Integrations</h2>
+        <Badge
+          variant="secondary"
+          data-testid="sheets-status-badge"
+          className={
+            sheetsOn ? "bg-emerald-500/15 text-emerald-300" : "bg-[#1E2E54] text-amber-300"
+          }
+        >
+          Google Sheets: {sheetsOn ? "Connected" : "Not configured"}
+        </Badge>
+        <Badge
+          variant="secondary"
+          data-testid="email-status-badge"
+          className={
+            s?.email_configured
+              ? "bg-emerald-500/15 text-emerald-300"
+              : "bg-[#1E2E54] text-amber-300"
+          }
+        >
+          Email: {s?.email_configured ? "Active" : "Not configured"}
+        </Badge>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={!sheetsOn || resync.isPending}
+          data-testid="sheets-resync-button"
+          className="ml-auto border-sky-500/40 text-sky-200 hover:bg-sky-500/10"
+          onClick={() => resync.mutate()}
+        >
+          <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+          {resync.isPending ? "Syncing…" : "Resync all to Sheets"}
+        </Button>
+      </div>
+      <p className="mt-3 text-xs leading-relaxed text-slate-400">
+        {sheetsOn
+          ? `Every new registration and enquiry is mirrored automatically. Service account: ${s?.sheets_account_email}`
+          : "Add GOOGLE_SERVICE_ACCOUNT_JSON and GOOGLE_SHEETS_SPREADSHEET_ID to backend/.env, then share the spreadsheet with the service-account email. Leads keep saving to the database either way."}
+      </p>
     </Card>
   );
 }
@@ -249,6 +324,24 @@ function Dashboard({ user, onLogout }: { user: AdminUser; onLogout: () => void }
           </Card>
         </div>
 
+        <IntegrationsPanel />
+
+        <Tabs defaultValue="leads">
+          <TabsList variant="line" data-testid="admin-tabs">
+            <TabsTrigger value="leads" data-testid="admin-tab-leads">Leads</TabsTrigger>
+            <TabsTrigger value="follow-ups" data-testid="admin-tab-followups">Follow-ups</TabsTrigger>
+            <TabsTrigger value="batches" data-testid="admin-tab-batches">Batches</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="follow-ups" className="mt-6">
+            <FollowUpsTab />
+          </TabsContent>
+
+          <TabsContent value="batches" className="mt-6">
+            <BatchesTab />
+          </TabsContent>
+
+          <TabsContent value="leads" className="mt-6">
         <Card className="border-slate-800 bg-[#111C35] p-5">
           <div className="flex flex-wrap items-end gap-3">
             <div className="relative min-w-[220px] flex-1">
@@ -353,6 +446,8 @@ function Dashboard({ user, onLogout }: { user: AdminUser; onLogout: () => void }
             )}
           </div>
         </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>

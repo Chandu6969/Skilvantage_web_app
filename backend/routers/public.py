@@ -6,8 +6,9 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, File, HTTPException, UploadFile
 
+from lib import email_service, sheets
 from lib.db import db
 from models.leads import (
     Enquiry,
@@ -39,14 +40,21 @@ async def _next_registration_id(learner_type: str) -> str:
 
 
 @router.post("/registrations", response_model=RegistrationResult, status_code=201)
-async def create_registration(payload: RegistrationCreate):
+async def create_registration(payload: RegistrationCreate, background: BackgroundTasks):
     if not payload.consent:
         raise HTTPException(status_code=400, detail="Consent is required to register")
     if not re.fullmatch(r"[0-9+\-\s()]{6,20}", payload.phone):
         raise HTTPException(status_code=400, detail="Enter a valid phone number")
     registration_id = await _next_registration_id(payload.learner_type)
     record = Registration(registration_id=registration_id, **payload.model_dump())
-    await db.registrations.insert_one(record.model_dump())
+    doc = record.model_dump()
+    await db.registrations.insert_one(doc)
+
+    # Both are best-effort and run after the response: a Sheets or email outage never
+    # costs the learner their registration.
+    background.add_task(sheets.sync_registration, doc)
+    background.add_task(email_service.send_registration_confirmation, doc)
+
     return RegistrationResult(
         registration_id=record.registration_id,
         learner_type=record.learner_type,
@@ -56,9 +64,11 @@ async def create_registration(payload: RegistrationCreate):
 
 
 @router.post("/enquiries", response_model=Enquiry, status_code=201)
-async def create_enquiry(payload: EnquiryCreate):
+async def create_enquiry(payload: EnquiryCreate, background: BackgroundTasks):
     record = Enquiry(**payload.model_dump())
-    await db.enquiries.insert_one(record.model_dump())
+    doc = record.model_dump()
+    await db.enquiries.insert_one(doc)
+    background.add_task(sheets.sync_enquiry, doc)
     return record
 
 

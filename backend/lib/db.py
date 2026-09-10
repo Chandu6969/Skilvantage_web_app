@@ -26,6 +26,8 @@ INDEXES: dict[str, list[IndexModel]] = {
         IndexModel([("learner_type", ASCENDING), ("created_at", DESCENDING)], name="learner_created"),
         IndexModel([("status", ASCENDING)], name="status"),
         IndexModel([("email", ASCENDING)], name="email"),
+        IndexModel([("follow_up_date", ASCENDING)], name="follow_up_date"),
+        IndexModel([("batch_id", ASCENDING)], name="batch_id"),
     ],
     "enquiries": [IndexModel([("created_at", DESCENDING)], name="created_desc")],
     "admin_users": [IndexModel([("email", ASCENDING)], name="email", unique=True)],
@@ -34,6 +36,11 @@ INDEXES: dict[str, list[IndexModel]] = {
         IndexModel([("expires_at", ASCENDING)], name="ttl", expireAfterSeconds=0),
     ],
     "resumes": [IndexModel([("file_id", ASCENDING)], name="file_id", unique=True)],
+    "batches": [
+        IndexModel([("id", ASCENDING)], name="id", unique=True),
+        IndexModel([("program", ASCENDING), ("start_date", ASCENDING)], name="program_start"),
+        IndexModel([("start_date", ASCENDING)], name="start_date"),
+    ],
 }
 
 
