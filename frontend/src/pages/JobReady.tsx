@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 const STEPS = [
   { n: "01", t: "Learn", d: "Structured modules with live guidance and revision checkpoints.", i: GraduationCap },
   { n: "02", t: "Practice", d: "Daily practice sets and mentor-reviewed assignments.", i: Target },
-  { n: "03", t: "Build Projects", d: "Real datasets, real problems, end-to-end delivery.", i: FolderGit2 },
+  { n: "03", t: "Build Projects", d: "Real-time projects on live data, delivered end-to-end.", i: FolderGit2 },
   { n: "04", t: "Build Portfolio", d: "GitHub, dashboards and documented case studies.", i: Layers },
   { n: "05", t: "Prepare Resume", d: "A resume written around outcomes, reviewed line by line.", i: FileText },
   { n: "06", t: "Practice Interviews", d: "Technical and HR mocks with structured feedback.", i: Users },

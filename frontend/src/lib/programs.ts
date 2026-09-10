@@ -25,8 +25,9 @@ export const PROGRAMS: Program[] = [
     description:
       "Learn how to transform raw data into meaningful business insights and make data-driven decisions.",
     duration: "3 - 4 months",
-    level: "Beginner friendly",
-    prerequisites: "No prior coding experience required. Basic computer literacy is enough.",
+    level: "Beginner to Advanced",
+    prerequisites:
+      "None. We start from absolute basics and take you through to advanced work — basic computer literacy is enough.",
     accent: "sky",
     roadmap: [
       "Excel",
@@ -85,8 +86,9 @@ export const PROGRAMS: Program[] = [
     description:
       "Build strong foundations in statistics, machine learning and predictive analytics to solve real-world problems.",
     duration: "5 - 6 months",
-    level: "Beginner to Intermediate",
-    prerequisites: "Comfort with basic mathematics. Programming is taught from scratch.",
+    level: "Beginner to Advanced",
+    prerequisites:
+      "None. Programming and maths are taught from scratch, then built up to advanced modelling.",
     accent: "indigo",
     roadmap: [
       "Python",
@@ -154,8 +156,9 @@ export const PROGRAMS: Program[] = [
     description:
       "Develop practical skills to build, train, evaluate and deploy intelligent machine learning systems.",
     duration: "6 months",
-    level: "Intermediate",
-    prerequisites: "Basic programming familiarity helps; fundamentals are revised in the program.",
+    level: "Beginner to Advanced",
+    prerequisites:
+      "None. Python and the maths for ML are covered from the ground up before advanced topics.",
     accent: "emerald",
     roadmap: [
       "Python Programming",
@@ -222,8 +225,9 @@ export const PROGRAMS: Program[] = [
     description:
       "Learn how modern Generative AI systems work and build practical AI applications using LLMs.",
     duration: "4 - 5 months",
-    level: "Beginner to Intermediate",
-    prerequisites: "Basic Python. Everything about LLMs is taught from first principles.",
+    level: "Beginner to Advanced",
+    prerequisites:
+      "None. Python and AI fundamentals are taught from the start, then LLMs from first principles to advanced.",
     accent: "amber",
     roadmap: [
       "Python Fundamentals",
@@ -283,8 +287,9 @@ export const PROGRAMS: Program[] = [
     description:
       "Learn how to build intelligent AI agents that can reason, plan, use tools and complete multi-step tasks.",
     duration: "4 - 5 months",
-    level: "Intermediate to Advanced",
-    prerequisites: "Python fundamentals and comfort with APIs. LLM basics are covered in-program.",
+    level: "Beginner to Advanced",
+    prerequisites:
+      "None. Python, APIs and LLM basics are covered in-program before advanced agent systems.",
     accent: "cyan",
     roadmap: [
       "Python",
@@ -358,7 +363,7 @@ export const ROADMAP_STAGES = [
   { title: "Foundation", detail: "Tools, language basics and the mindset the role needs." },
   { title: "Core Skills", detail: "The everyday working skills employers test you on." },
   { title: "Advanced Skills", detail: "Depth that separates a candidate from a hire." },
-  { title: "Projects", detail: "Real datasets, real problems, reviewed work." },
+  { title: "Projects", detail: "Real-time projects on live data, reviewed work." },
   { title: "Portfolio", detail: "GitHub, dashboards and case studies you can show." },
   { title: "Resume", detail: "A resume written around outcomes, not keywords." },
   { title: "Interview Preparation", detail: "Mock technical, HR and communication rounds." },
@@ -386,7 +391,7 @@ export const FAQS = [
   },
   {
     q: "Do I need programming experience?",
-    a: "Not for the Data Analyst and Generative AI tracks — programming is taught from the basics. Advanced tracks assume some Python comfort.",
+    a: "No. Every program runs from beginner to advanced — programming is taught from scratch, then built up to advanced, job-level work.",
   },
   {
     q: "Are programs available for students?",
@@ -402,7 +407,7 @@ export const FAQS = [
   },
   {
     q: "Do you provide projects?",
-    a: "Every program includes reviewed, portfolio-grade projects using real-world datasets and problem statements.",
+    a: "Yes. Every program includes real-time projects on live datasets and industry problem statements, reviewed by a mentor.",
   },
   {
     q: "Do you provide interview preparation?",

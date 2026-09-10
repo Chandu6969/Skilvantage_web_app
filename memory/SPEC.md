@@ -76,6 +76,14 @@ JSON, no localStorage. Every `/api/admin/*` route depends on `current_admin`.
 - 8 demo registrations, ids `SVS25DEMO00`…`SVP25DEMO07` (mixed learner types, programs, statuses).
 - 1 demo enquiry from Divya Raman.
 
+## Content rules
+- Every program is positioned **"Beginner to Advanced"** — no program is labelled beginner-only or
+  intermediate/advanced-only, and no prerequisites gate entry (all read "None. …taught from
+  scratch"). Projects are described as **real-time projects on live data**, not just "portfolio
+  work". These strings live in `frontend/src/lib/programs.ts` (`level`, `prerequisites`) — change
+  them there, not in the pages.
+- No placement guarantees anywhere; use "Job-readiness focused training".
+
 ## Notes / deviations
 - MongoDB is the system of record; Google Sheets is a best-effort mirror, not the source of truth.
 - WhatsApp confirmation was explicitly deferred by the user; email confirmation replaces it.

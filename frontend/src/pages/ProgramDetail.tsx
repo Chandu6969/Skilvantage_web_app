@@ -68,6 +68,9 @@ export default function ProgramDetail() {
               <Signal className="mr-1.5 h-3 w-3" /> {program.level}
             </Badge>
             <Badge variant="secondary" className="bg-[#1E2E54] text-sky-300">
+              Real-time projects
+            </Badge>
+            <Badge variant="secondary" className="bg-[#1E2E54] text-sky-300">
               Job-readiness focused training
             </Badge>
           </div>
@@ -153,11 +156,18 @@ export default function ProgramDetail() {
           </div>
         </Section>
 
-        <Section testid="program-projects" caption="Projects" title="Portfolio-grade project work">
+        <Section
+          testid="program-projects"
+          caption="Projects"
+          title="Real-time industry projects"
+        >
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {program.projects.map((p) => (
               <Card key={p} className="border-slate-800 bg-[#111C35] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-sky-400/50">
                 <p className="text-sm font-semibold text-slate-100">{p}</p>
+                <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                  Live datasets, mentor-reviewed, built the way it is done on the job.
+                </p>
               </Card>
             ))}
           </div>

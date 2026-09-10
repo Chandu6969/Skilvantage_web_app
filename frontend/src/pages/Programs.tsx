@@ -25,10 +25,10 @@ export default function Programs() {
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-300">
             {track === "professional"
-              ? "Transition-focused tracks for working professionals — flexible batches, role mapping and portfolio work you can show at interviews."
+              ? "Transition-focused tracks for working professionals — flexible batches, role mapping and real-time projects you can show at interviews."
               : track === "student"
-                ? "Student and fresher tracks built around college schedules, with project work that turns into a portfolio."
-                : "Five industry-shaped programs. Every one ends the same way: projects, portfolio, resume, interview practice and job readiness."}
+                ? "Student and fresher tracks built around college schedules, running beginner to advanced with real-time projects that become your portfolio."
+                : "Five industry-shaped programs, each running from beginner to advanced. Every one ends the same way: real-time projects, portfolio, resume, interview practice and job readiness."}
           </p>
         </div>
       </section>

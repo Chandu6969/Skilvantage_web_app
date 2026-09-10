@@ -17,11 +17,11 @@ export default function Projects() {
             className="mt-3 font-heading text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl"
             data-testid="projects-heading"
           >
-            Build Real-World Projects
+            Build Real-Time Projects
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-300">
-            Every program ends with work you can show. Reviewed projects, real datasets, and a
-            portfolio that answers the interviewer's first question: "What have you built?"
+            Every program takes you from beginner to advanced through real-time projects on live
+            datasets — so you can answer the interviewer's first question: "What have you built?"
           </p>
         </div>
       </section>
@@ -51,7 +51,8 @@ export default function Projects() {
                     <FolderGit2 className="h-5 w-5 text-sky-400" />
                     <p className="mt-3.5 text-sm font-semibold text-slate-100">{proj}</p>
                     <p className="mt-2 text-xs leading-relaxed text-slate-400">
-                      Built end-to-end, reviewed by a mentor, and documented for your portfolio.
+                      Real-time build on live data, reviewed by a mentor and documented for your
+                      portfolio.
                     </p>
                   </Card>
                 ))}

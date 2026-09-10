@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 
 const WHY = [
   { icon: Layers, title: "Industry-Relevant Skills", body: "Curriculum shaped around the work real teams actually do." },
-  { icon: FolderGit2, title: "Practical Projects", body: "Reviewed, portfolio-grade projects on real datasets." },
+  { icon: FolderGit2, title: "Practical Projects", body: "Real-time projects on live datasets, reviewed by mentors." },
   { icon: Target, title: "Job-Ready Training", body: "Trained to perform on day one, not just to finish a course." },
   { icon: MessagesSquare, title: "Communication & Soft Skills", body: "Explain your work clearly — in reviews and interviews." },
   { icon: Mic, title: "Interview Preparation", body: "Technical mocks, HR rounds and structured feedback." },

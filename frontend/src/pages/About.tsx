@@ -10,7 +10,7 @@ const FOCUS = [
   { t: "Industry skills", d: "Curriculum shaped by how teams actually deliver." },
   { t: "Career transformation", d: "Role mapping for both freshers and switchers." },
   { t: "Communication", d: "Explaining your work is treated as a core skill." },
-  { t: "Projects", d: "Reviewed, portfolio-grade builds in every program." },
+  { t: "Projects", d: "Real-time projects on live data in every program." },
   { t: "Continuous learning", d: "Habits and resources that outlast the course." },
   { t: "Job readiness", d: "Resume, portfolio and interview practice built in." },
 ];
