@@ -168,6 +168,139 @@ export interface FollowUpBoard {
 export const BATCH_MODES = ["Online", "Offline", "Hybrid"];
 export const BATCH_STATUSES = ["Planned", "Enrolling", "Running", "Completed", "Cancelled"];
 
+export const ATTENDANCE_CODES = ["P", "A", "L", "LT", "H", "NC", "T"] as const;
+
+export const ATTENDANCE_LABELS: Record<string, string> = {
+  P: "Present",
+  A: "Absent",
+  L: "Leave",
+  LT: "Late",
+  H: "Holiday",
+  NC: "No Class",
+  T: "Task",
+};
+
+export const PAYMENT_AMOUNTS = [999, 1249];
+
+export const YEAR_OPTIONS = [
+  "1st Year B.Tech",
+  "2nd Year B.Tech",
+  "3rd Year B.Tech",
+  "4th Year B.Tech",
+  "Already Graduated",
+  "Working Professional",
+];
+
+export const BRANCH_OPTIONS = [
+  "Data Science",
+  "AI/ML",
+  "CSE",
+  "CSE (Cyber Security)",
+  "IT",
+  "ECE",
+  "EEE",
+  "Mechanical",
+  "Civil",
+  "Other",
+];
+
+export interface Student {
+  id: string;
+  full_name: string;
+  phone?: string | null;
+  email?: string | null;
+  year?: string | null;
+  branch?: string | null;
+  program?: string | null;
+  total_fee?: number | null;
+  monthly_amount?: number | null;
+  active: boolean;
+  notes: string;
+  created_at: string;
+  registration_id?: string | null;
+}
+
+export interface StudentCreate {
+  full_name: string;
+  phone?: string | null;
+  email?: string | null;
+  year?: string | null;
+  branch?: string | null;
+  total_fee?: number | null;
+  monthly_amount?: number | null;
+  active?: boolean;
+  notes?: string;
+}
+
+export interface AttendanceCell {
+  student_id: string;
+  full_name: string;
+  year?: string | null;
+  branch?: string | null;
+  phone?: string | null;
+  code?: string | null;
+}
+
+export interface AttendanceDay {
+  date: string;
+  is_today: boolean;
+  marked: number;
+  total: number;
+  rows: AttendanceCell[];
+}
+
+export interface AttendanceStudentSummary {
+  student_id: string;
+  full_name: string;
+  year?: string | null;
+  branch?: string | null;
+  counts: Record<string, number>;
+  working_days: number;
+  attended: number;
+  percentage: number;
+  by_date: Record<string, string>;
+}
+
+export interface AttendanceRangeSummary {
+  date_from: string;
+  date_to: string;
+  dates: string[];
+  students: AttendanceStudentSummary[];
+  overall_percentage: number;
+}
+
+export interface PaymentRow {
+  student_id: string;
+  full_name: string;
+  phone?: string | null;
+  year?: string | null;
+  branch?: string | null;
+  month: string;
+  paid: boolean;
+  amount?: number | null;
+  method?: string | null;
+  paid_on?: string | null;
+  notes: string;
+  total_fee?: number | null;
+  paid_to_date: number;
+  balance?: number | null;
+  months_paid: number;
+}
+
+export interface PaymentBoard {
+  month: string;
+  total_students: number;
+  paid_count: number;
+  pending_count: number;
+  paid_percentage: number;
+  expected_revenue: number;
+  collected: number;
+  outstanding: number;
+  lifetime_collected: number;
+  lifetime_expected: number;
+  rows: PaymentRow[];
+}
+
 export interface AdminStats {
   total_leads: number;
   student_leads: number;

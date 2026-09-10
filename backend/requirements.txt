@@ -33,3 +33,4 @@ emergentintegrations==0.2.0
 resend==2.43.0
 google-auth==2.57.1
 google-api-python-client==2.200.0
+reportlab==5.0.1

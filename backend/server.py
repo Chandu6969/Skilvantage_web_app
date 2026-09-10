@@ -61,12 +61,18 @@ async def get_status_checks():
     return [StatusCheck(**status_check) for status_check in status_checks]
 
 from routers.admin import router as admin_router
+from routers.attendance import router as attendance_router
 from routers.batches import router as batches_router
+from routers.payments import router as payments_router
 from routers.public import router as public_router
+from routers.students import router as students_router
 
 api_router.include_router(public_router)
 api_router.include_router(admin_router)
 api_router.include_router(batches_router)
+api_router.include_router(students_router)
+api_router.include_router(attendance_router)
+api_router.include_router(payments_router)
 
 # Include the router in the main app
 app.include_router(api_router)

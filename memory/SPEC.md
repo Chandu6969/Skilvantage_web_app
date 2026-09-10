@@ -80,7 +80,42 @@ JSON, no localStorage. Every `/api/admin/*` route depends on `current_admin`.
    recharts bar + line charts, filterable table, lead dialog with status/notes/follow-up + resume
    download + CSV export).
 
+## Attendance (admin → Attendance tab)
+`students` roster drives it. Codes: **P, A, L, LT, H, NC, T** (Present, Absent, Leave, Late,
+Holiday, No Class, Task). Attendance % counts **P, LT, T** as attended; **H and NC are excluded**
+from the working-day denominator.
+- `GET /api/admin/attendance/day` — marking sheet; with no `?date=` it uses the **server's** today
+  (`lib/dates.py`), never a browser date, and returns `is_today`.
+- `POST /api/admin/attendance/save` — upsert marks (`code: ""` clears a mark).
+- `POST /api/admin/attendance/mark-all?code=P` — bulk-set the whole roster for a day.
+- `GET /api/admin/attendance/summary?date_from=&date_to=` — from/to range, per-student counts +
+  percentage (max 120 days; reversed range → 400).
+- `GET /api/admin/attendance/export.pdf?date_from=&date_to=` — **attendance sheet only** (reportlab,
+  landscape A4): day-by-day grid when the range is ≤31 days, otherwise totals only. Also
+  `export.csv`.
+
+## Payments (admin → Payments tab)
+Month-by-month per student (`payments` collection, unique on student_id+month). Amounts ₹999 /
+₹1249 (or custom), method, paid-on, notes. Each student also carries `monthly_amount` and an
+optional `total_fee`, so the board reports paid-to-date, balance and months-paid alongside the
+month's expected / collected / outstanding and all-time collected.
+- `GET /api/admin/payments?month=YYYY-MM` (defaults to the server's current month)
+- `POST /api/admin/payments` — upsert; marking paid without an amount defaults to the student's
+  monthly amount and stamps `paid_on` with today.
+- `GET /api/admin/payments/export.pdf|csv?month=` — both formats.
+
+## Students (admin → Students tab)
+`GET|POST /api/admin/students`, `PATCH|DELETE /api/admin/students/{id}`,
+`POST /api/admin/students/import-from-registrations` (imports leads whose status is Registered or
+Training Started, skipping duplicates by registration_id). Deleting a student also deletes their
+attendance and payment rows.
+Seed the roster from the user's HTML files with `python seed_students.py` (38 students, idempotent
+by name, monthly_amount ₹999).
+
 ## Seed facts
+- `python seed_students.py` → 38-student roster (from the user's attendance-register and
+  student-portal HTML files), each with year, branch, phone and monthly_amount ₹999. Idempotent
+  by full_name. **This has been run against the user's Atlas cluster.**
 - `cd /app/backend && python seed.py --admin-only` → admin account only, no demo data
   (this is what was run against Atlas; the cluster starts clean by the user's choice).
 - `python seed.py` (no flag) additionally inserts 8 demo registrations `SVS25DEMO00`…`SVP25DEMO07`

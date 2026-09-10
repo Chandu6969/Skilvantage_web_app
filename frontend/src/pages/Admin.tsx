@@ -44,6 +44,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FollowUpsTab from "@/components/admin/FollowUpsTab";
 import BatchesTab from "@/components/admin/BatchesTab";
+import StudentsTab from "@/components/admin/StudentsTab";
+import AttendanceTab from "@/components/admin/AttendanceTab";
+import PaymentsTab from "@/components/admin/PaymentsTab";
 import { ApiError, apiGet, apiPatch, apiPost } from "@/lib/api";
 import { PROGRAMS, PROGRAM_LABEL } from "@/lib/programs";
 import { LEAD_STATUSES } from "@/lib/types";
@@ -330,8 +333,23 @@ function Dashboard({ user, onLogout }: { user: AdminUser; onLogout: () => void }
           <TabsList variant="line" data-testid="admin-tabs">
             <TabsTrigger value="leads" data-testid="admin-tab-leads">Leads</TabsTrigger>
             <TabsTrigger value="follow-ups" data-testid="admin-tab-followups">Follow-ups</TabsTrigger>
+            <TabsTrigger value="attendance" data-testid="admin-tab-attendance">Attendance</TabsTrigger>
+            <TabsTrigger value="payments" data-testid="admin-tab-payments">Payments</TabsTrigger>
+            <TabsTrigger value="students" data-testid="admin-tab-students">Students</TabsTrigger>
             <TabsTrigger value="batches" data-testid="admin-tab-batches">Batches</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="attendance" className="mt-6">
+            <AttendanceTab />
+          </TabsContent>
+
+          <TabsContent value="payments" className="mt-6">
+            <PaymentsTab />
+          </TabsContent>
+
+          <TabsContent value="students" className="mt-6">
+            <StudentsTab />
+          </TabsContent>
 
           <TabsContent value="follow-ups" className="mt-6">
             <FollowUpsTab />
