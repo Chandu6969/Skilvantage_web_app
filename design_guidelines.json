@@ -1,0 +1,388 @@
+{
+  "project_name": "SkilVantage",
+  "theme_type": "dark",
+  "archetype": "THE PERFORMANCE PRO & TECHNICAL ACCELERATOR (Navy/Deep Blue Precision)",
+  "colors": {
+    "surfaces": [
+      {
+        "name": "page",
+        "kind": "solid",
+        "bg": "#070B14",
+        "on_bg": "#F1F5F9",
+        "on_bg_muted": "#94A3B8",
+        "roles": {
+          "accent_highlight": "#38BDF8",
+          "brand_primary": "#2563EB",
+          "border": "#1E293B",
+          "glow_border": "rgba(56, 189, 248, 0.2)"
+        }
+      },
+      {
+        "name": "panel",
+        "kind": "solid",
+        "bg": "#0D1527",
+        "on_bg": "#F8FAFC",
+        "on_bg_muted": "#94A3B8",
+        "roles": {
+          "border": "#1E2C4A",
+          "hover_border": "#3B82F6",
+          "success": "#34D399",
+          "warning": "#FBBF24"
+        }
+      },
+      {
+        "name": "card_elevated",
+        "kind": "solid",
+        "bg": "#111C35",
+        "on_bg": "#FFFFFF",
+        "on_bg_muted": "#CBD5E1",
+        "roles": {
+          "border": "#23355A",
+          "tag_bg": "#1E2E54",
+          "tag_text": "#7DD3FC"
+        }
+      },
+      {
+        "name": "glass_surface",
+        "kind": "glass",
+        "contrast_against": "#070B14",
+        "guarantee": "backdrop-blur-xl bg-[#0B132B]/80 border border-sky-500/20 shadow-2xl",
+        "on_bg": "#F8FAFC",
+        "on_bg_muted": "#94A3B8"
+      },
+      {
+        "name": "hero",
+        "kind": "image",
+        "contrast_against": "#070B14",
+        "guarantee": "scrim: linear-gradient(to bottom, rgba(7,11,20,0.85) 0%, rgba(7,11,20,0.95) 100%)",
+        "on_bg": "#FFFFFF",
+        "on_bg_muted": "#CBD5E1",
+        "roles": {
+          "accent": "#38BDF8",
+          "badge_bg": "rgba(37, 99, 235, 0.25)",
+          "badge_text": "#93C5FD"
+        }
+      },
+      {
+        "name": "inverse",
+        "kind": "solid",
+        "bg": "#F8FAFC",
+        "on_bg": "#0B1120",
+        "on_bg_muted": "#475569"
+      }
+    ],
+    "accent": "#0284C7",
+    "on_accent": "#FFFFFF",
+    "brand_amber": "#F59E0B",
+    "brand_emerald": "#10B981",
+    "brand_indigo": "#6366F1",
+    "brand_cyan": "#06B6D4"
+  },
+  "typography": {
+    "heading_family": "Space Grotesk Variable, sans-serif",
+    "body_family": "DM Sans Variable, sans-serif",
+    "mono_family": "JetBrains Mono Variable, monospace",
+    "css_import_line": "@import \"@fontsource-variable/space-grotesk\";\n@import \"@fontsource-variable/dm-sans\";\n@import \"@fontsource-variable/jetbrains-mono\";",
+    "scale_px": {
+      "display": 56,
+      "h1": 44,
+      "h2": 32,
+      "h3": 24,
+      "h4": 20,
+      "body": 16,
+      "caption": 14
+    },
+    "rules": {
+      "h1": "font-bold tracking-tight text-3xl sm:text-4xl lg:text-5xl font-heading leading-tight",
+      "h2": "font-bold tracking-tight text-2xl sm:text-3xl lg:text-4xl font-heading text-slate-100",
+      "h3": "font-semibold text-xl sm:text-2xl font-heading text-slate-100",
+      "body": "font-sans text-base leading-relaxed text-slate-300",
+      "caption": "font-mono text-xs uppercase tracking-widest text-sky-400 font-semibold"
+    }
+  },
+  "entry_surfaces": {
+    "/": "split hero with animated terminal / tech badge metrics on left, dynamic quotes pill, real-time cohort counter right, and 3 distinct action triggers",
+    "/register": "multi-step branded wizard — learner persona selector step 1, program specialization step 2, tailored application form step 3 with live summary card",
+    "/admin": "high-density tactical analytics command center with key metrics, conversion velocity chart, filterable lead grid, status pipeline, and notes editor",
+    "/programs": "asymmetric bento catalog with skill progression tags, syllabus preview triggers, and salary benchmark indicators",
+    "/roadmaps": "interactive 8-step visual milestone timeline (Foundation → Core Skills → Advanced → Projects → Portfolio → Resume → Interview Prep → Job Ready) with program filter"
+  },
+  "image_urls": [
+    {
+      "url": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDR8MHwxfHNlYXJjaHwyfHxzdHVkZW50cyUyMGNvZGluZyUyMGNsYXNzcm9vbXxlbnwwfHx8fDE3ODkwMTk4MjR8MA&ixlib=rb-4.1.0&q=85",
+      "category": "classroom_cohort",
+      "description": "Collaborative cohort of students and professionals coding and learning together",
+      "placement": "Who Can Join section (Students & Freshers tab / background visual) and About Us story"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2ODh8MHwxfHNlYXJjaHwzfHxwcm9mZXNzaW9uYWwlMjBkYXRhJTIwYW5hbHlzdHxlbnwwfHx8fDE3ODkwMTk4MjR8MA&ixlib=rb-4.1.0&q=85",
+      "category": "data_analytics_program",
+      "description": "High performance analytics dashboard and data modeling visual",
+      "placement": "Data Analytics & Data Science Program Detail Hero & Project Showcase"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1759661990336-51bd4b951fea?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzJ8MHwxfHNlYXJjaHw0fHxtb2Rlcm4lMjBzb2Z0d2FyZSUyMGVuZ2luZWVyJTIwd29ya3NwYWNlfGVufDB8fHx8MTc4OTAxOTgyNHww&ixlib=rb-4.1.0&q=85",
+      "category": "ai_engineering_workspace",
+      "description": "Multi-screen AI and neural network coding environment with glowing neon terminal display",
+      "placement": "AI/ML, Generative AI & Agentic AI Program Hero & Projects page"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1531496730074-83b638c0a7ac?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDR8MHwxfHNlYXJjaHw0fHxzdHVkZW50cyUyMGNvZGluZyUyMGNsYXNzcm9vbXxlbnwwfHx8fDE3ODkwMTk4MjR8MA&ixlib=rb-4.1.0&q=85",
+      "category": "mentorship_interaction",
+      "description": "Senior industry mentor guiding learners through live code review",
+      "placement": "Job Readiness 6-Step Process & 1-on-1 Mentorship showcase"
+    }
+  ],
+  "programs_catalog": [
+    {
+      "id": "data-analytics",
+      "name": "Data Analytics Masterclass",
+      "tagline": "Transform raw numbers into strategic business intelligence.",
+      "level": "Beginner to Advanced",
+      "duration": "12 Weeks (Live Cohort + Lab)",
+      "skills": ["SQL", "Power BI", "Tableau", "Excel Advanced", "Python Analytics", "Business Metrics"],
+      "careers": ["Data Analyst", "BI Developer", "Product Analyst", "Operations Specialist"],
+      "icon": "BarChart3",
+      "badge": "High Demand",
+      "gradient": "from-blue-600/20 via-sky-600/10 to-transparent",
+      "border_accent": "border-sky-500/40"
+    },
+    {
+      "id": "data-science",
+      "name": "Data Science & Predictive Modeling",
+      "tagline": "Master mathematical modeling, feature engineering, and predictive pipelines.",
+      "level": "Intermediate",
+      "duration": "16 Weeks",
+      "skills": ["Python (NumPy, Pandas, Scikit-Learn)", "Statistics & Probability", "Machine Learning", "Data Mining", "MLOps Basics"],
+      "careers": ["Junior Data Scientist", "Quantitative Analyst", "ML Research Associate"],
+      "icon": "Binary",
+      "badge": "Top Rated",
+      "gradient": "from-cyan-600/20 via-blue-600/10 to-transparent",
+      "border_accent": "border-cyan-500/40"
+    },
+    {
+      "id": "aiml",
+      "name": "AI & Machine Learning Engineering",
+      "tagline": "Architect deep neural networks, computer vision, and NLP systems from scratch.",
+      "level": "Intermediate to Advanced",
+      "duration": "18 Weeks",
+      "skills": ["Deep Learning", "PyTorch / TensorFlow", "Computer Vision (YOLO, OpenCV)", "NLP & Transformers", "Docker & Kubernetes for AI"],
+      "careers": ["AI/ML Engineer", "Deep Learning Specialist", "Computer Vision Engineer"],
+      "icon": "Cpu",
+      "badge": "Career Accelerator",
+      "gradient": "from-indigo-600/20 via-purple-600/10 to-transparent",
+      "border_accent": "border-indigo-500/40"
+    },
+    {
+      "id": "generative-ai",
+      "name": "Generative AI & LLM Systems",
+      "tagline": "Fine-tune LLMs, design robust RAG architectures, and build enterprise GenAI apps.",
+      "level": "Advanced",
+      "duration": "14 Weeks",
+      "skills": ["LLM Architecture", "LangChain & LlamaIndex", "Vector DBs (Pinecone, Chroma)", "Prompt Engineering & Evaluation", "LoRA Fine-tuning"],
+      "careers": ["GenAI Engineer", "LLM Solutions Architect", "Prompt & AI Specialist"],
+      "icon": "Sparkles",
+      "badge": "2026 Industry Wave",
+      "gradient": "from-amber-500/20 via-sky-600/10 to-transparent",
+      "border_accent": "border-amber-500/40"
+    },
+    {
+      "id": "agentic-ai",
+      "name": "Agentic AI & Autonomous Workflows",
+      "tagline": "Build autonomous multi-agent swarms with tool use, memory, and task execution.",
+      "level": "Cutting-Edge",
+      "duration": "12 Weeks",
+      "skills": ["CrewAI & AutoGen", "Agent Memory & Reflection", "Tool Augmentation & MCP", "Autonomous Loops", "Enterprise Guardrails"],
+      "careers": ["Agentic AI Engineer", "AI Automation Architect", "Autonomous Systems Lead"],
+      "icon": "Bot",
+      "badge": "Next-Gen Frontier",
+      "gradient": "from-emerald-500/20 via-cyan-600/10 to-transparent",
+      "border_accent": "border-emerald-500/40"
+    }
+  ],
+  "motivational_quotes": [
+    "\"The future belongs to those who learn more skills and combine them in creative ways.\" — Robert Greene",
+    "\"AI won't replace you, but a professional using AI effectively will.\" — Industry Insight",
+    "\"Technical mastery + communication confidence = Unstoppable career acceleration.\" — SkilVantage Mantra",
+    "\"Don't just collect certificates. Build production systems that hiring managers can test.\" — Lead AI Mentor",
+    "\"From your first line of code to the final offer letter, we build your career resilience.\" — SkilVantage Promise"
+  ],
+  "job_readiness_steps": [
+    {
+      "step": "01",
+      "title": "Skill Gap Diagnosis",
+      "desc": "1-on-1 assessment to benchmark your current math, coding, and problem-solving level.",
+      "icon": "Target"
+    },
+    {
+      "step": "02",
+      "title": "Hands-on Cohort Sprints",
+      "desc": "Intensive live engineering sessions with real-world enterprise datasets and production toolchains.",
+      "icon": "Code2"
+    },
+    {
+      "step": "03",
+      "title": "Industry Capstone Projects",
+      "desc": "Build 4+ end-to-end applications deployed live with CI/CD and interactive GitHub documentation.",
+      "icon": "Layers"
+    },
+    {
+      "step": "04",
+      "title": "Communication & Executive Pitch",
+      "desc": "Master stakeholder communication, business storytelling, and cross-functional technical demos.",
+      "icon": "MessageSquare"
+    },
+    {
+      "step": "05",
+      "title": "ATS Resume & GitHub Audit",
+      "desc": "Expert restructuring of your profile, project summaries, and online presence for 90%+ ATS pass rates.",
+      "icon": "FileCheck"
+    },
+    {
+      "step": "06",
+      "title": "Mock Interviews & Offer Negotiation",
+      "desc": "Rigorous technical and behavioral simulations with hiring managers from Tier-1 tech enterprises.",
+      "icon": "Briefcase"
+    }
+  ],
+  "why_skilvantage_features": [
+    {
+      "title": "100% Project-Driven Curriculum",
+      "desc": "No passive theory. You construct end-to-end production pipelines used by actual engineering teams.",
+      "icon": "Terminal"
+    },
+    {
+      "title": "Dual Track: Tech + Communication",
+      "desc": "We train you on how to articulate complex data insights to both engineers and C-suite leaders.",
+      "icon": "MessageCircleHeart"
+    },
+    {
+      "title": "Personalized 1:1 Mentorship",
+      "desc": "Weekly code reviews and unblocking sessions with practitioners from top tech companies.",
+      "icon": "Users"
+    },
+    {
+      "title": "Autonomous Agentic AI Lab",
+      "desc": "First-of-its-kind curriculum training you in Multi-Agent workflows, Tool-calling, and MCP protocols.",
+      "icon": "Cpu"
+    },
+    {
+      "title": "Verified Job-Ready Portfolio",
+      "desc": "Graduate with hosted web apps, reproducible Jupyter notebooks, and clean architectural diagrams.",
+      "icon": "ShieldCheck"
+    },
+    {
+      "title": "Lifetime Career Support Network",
+      "desc": "Direct referral channels, alumni job boards, and ongoing skill upgrade workshops at zero extra cost.",
+      "icon": "Award"
+    }
+  ],
+  "communication_section_spec": {
+    "badge": "The SkilVantage Advantage",
+    "headline": "Technical Skills + Communication = Career Success",
+    "subtext": "Most bootcamps only teach syntax. Top tech employers hire people who can explain *why* an algorithm matters, translate metrics into business value, and lead cross-functional discussions.",
+    "pillars": [
+      {
+        "title": "Business Storytelling",
+        "desc": "Convert confusing SQL queries or ML loss curves into executive presentations that drive decisions."
+      },
+      {
+        "title": "Technical Demystification",
+        "desc": "Explain complex AI mechanisms and probabilistic models clearly to non-technical stakeholders."
+      },
+      {
+        "title": "High-Impact Interview Delivery",
+        "desc": "Confidently structure responses using the STAR method, whiteboard system design, and negotiate compensation."
+      }
+    ]
+  },
+  "roadmaps_flow": [
+    {"stage": "01", "name": "Foundation", "focus": "Python, Linux basics, Git & Data structures", "weeks": "Weeks 1-2"},
+    {"stage": "02", "name": "Core Skills", "focus": "SQL querying, Pandas, EDA, Statistical methods", "weeks": "Weeks 3-5"},
+    {"stage": "03", "name": "Advanced Specialization", "focus": "ML Algorithms / Deep Learning / LLM Fine-tuning", "weeks": "Weeks 6-9"},
+    {"stage": "04", "name": "Industry Projects", "focus": "Production pipelines, Docker containers, Streamlit/FastAPI apps", "weeks": "Weeks 10-12"},
+    {"stage": "05", "name": "Portfolio & GitHub", "focus": "Clean documentation, architecture diagrams, live demos", "weeks": "Week 13"},
+    {"stage": "06", "name": "ATS Resume Building", "focus": "Role-specific keyword optimization & metric-heavy bullet points", "weeks": "Week 14"},
+    {"stage": "07", "name": "Interview Preparation", "focus": "Live coding tests, system design, behavioral mock rounds", "weeks": "Weeks 15-16"},
+    {"stage": "08", "name": "Job Ready & Placement", "focus": "Direct hiring partner introductions & offer guidance", "weeks": "Career Ready"}
+  ],
+  "components_structure": {
+    "layout": {
+      "Navbar": "frontend/src/components/layout/Navbar.tsx",
+      "Footer": "frontend/src/components/layout/Footer.tsx",
+      "AdvisorModal": "frontend/src/components/common/AdvisorModal.tsx"
+    },
+    "pages": {
+      "Home": "frontend/src/pages/Home.tsx",
+      "Programs": "frontend/src/pages/Programs.tsx",
+      "ProgramDetail": "frontend/src/pages/ProgramDetail.tsx",
+      "Roadmaps": "frontend/src/pages/Roadmaps.tsx",
+      "Projects": "frontend/src/pages/Projects.tsx",
+      "JobReady": "frontend/src/pages/JobReady.tsx",
+      "About": "frontend/src/pages/About.tsx",
+      "Contact": "frontend/src/pages/Contact.tsx",
+      "Register": "frontend/src/pages/Register.tsx",
+      "RegistrationSuccess": "frontend/src/pages/RegistrationSuccess.tsx",
+      "Admin": "frontend/src/pages/Admin.tsx"
+    },
+    "widgets": {
+      "QuotesTicker": "frontend/src/components/widgets/QuotesTicker.tsx",
+      "LeadTable": "frontend/src/components/admin/LeadTable.tsx",
+      "AdminStats": "frontend/src/components/admin/AdminStats.tsx",
+      "RegistrationWizard": "frontend/src/components/registration/RegistrationWizard.tsx"
+    }
+  },
+  "motion_and_interactions": {
+    "transitions": "transition-colors duration-200, transition-transform duration-200 ease-out",
+    "glow_effect": "hover:shadow-[0_0_25px_rgba(56,189,248,0.25)] hover:border-sky-400/50",
+    "card_hover": "hover:-translate-y-1 transition-all duration-300",
+    "button_press": "active:scale-[0.98]",
+    "stagger_delays": "50ms staggered entrance on cards and lists"
+  },
+  "accessibility": {
+    "data_testids_required": [
+      "navbar-brand",
+      "nav-explore-courses-btn",
+      "nav-register-btn",
+      "nav-advisor-btn",
+      "hero-explore-btn",
+      "hero-register-btn",
+      "hero-advisor-btn",
+      "quotes-rotator",
+      "why-skilvantage-grid",
+      "who-can-join-toggle",
+      "program-card-data-analytics",
+      "program-card-data-science",
+      "program-card-aiml",
+      "program-card-generative-ai",
+      "program-card-agentic-ai",
+      "roadmap-step-container",
+      "registration-step-learner-type",
+      "registration-step-program",
+      "registration-step-form",
+      "registration-submit-button",
+      "registration-success-message",
+      "admin-dashboard-leads-table",
+      "admin-lead-status-select",
+      "admin-lead-notes-input",
+      "admin-filter-program-select",
+      "contact-form-submit-button",
+      "advisor-modal-submit-button"
+    ],
+    "contrast_standards": "All text tokens strictly exceed 4.5:1 ratio against their background surfaces. Accent buttons feature high contrast white text over solid blue/cyan."
+  },
+  "instructions_to_main_agent": [
+    "1. In `frontend/src/index.css`, import the 3 fonts (@fontsource-variable/space-grotesk, @fontsource-variable/dm-sans, @fontsource-variable/jetbrains-mono) and configure the dark navy theme variables accurately.",
+    "2. Ensure the `<html class='dark'>` in `frontend/index.html` is set by default or active class on container.",
+    "3. Build full responsive support: hamburger menu on mobile for Navbar with smooth sheet or drawer overlay, rich desktop nav.",
+    "4. Implement all pages with rich interactive details: Home, Programs, ProgramDetail (dynamically handles the 5 programs with detailed syllabus, career roles, tools, and prerequisites), Roadmaps (with visual step timeline), Projects (filterable by category: AI/ML, GenAI, Data Analytics), JobReady (6-step detailed guide, resume tips, interview prep checklists), About, Contact (with working form + feedback toast), Register (3-step wizard with validation), RegistrationSuccess, and Admin dashboard.",
+    "5. In Admin dashboard, provide summary stats cards, Recharts chart for registrations by program & timeline, search/filter controls, and a complete table with status dropdown updating (New, Contacted, Enrolled, In Review) and quick note addition with backend persistence.",
+    "6. In Backend (`backend/server.py` or routers), provide API endpoints for: POST /api/leads (registration & advisor requests), GET /api/leads (with filters), PATCH /api/leads/{id} (status & notes), GET /api/stats (aggregate metrics), and GET /api/programs (program metadata). Provide sample seed data in `backend/seed.py` so the admin dashboard is immediately populated with realistic leads and stats.",
+    "7. Include all `data-testid` tags as specified to guarantee reliable end-to-end verification.",
+    "8. Implement rotating quotes in the Hero section with smooth auto-cycling every 4 seconds and manual dot controls."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": {
+    "design_tone": "Premium, career-accelerating technology consultancy. Deep obsidian & navy background with electric cyan/sky accents and subtle crystal glass elements. Sharp precision cards with 1px border glows.",
+    "anti_patterns": "No overly saturated purple gradients, no childish illustrations, no generic centered white cards on gray, no unreadable low-contrast text."
+  }
+}
