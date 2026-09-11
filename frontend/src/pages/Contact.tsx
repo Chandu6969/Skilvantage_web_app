@@ -65,9 +65,9 @@ export default function Contact() {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
           <div className="space-y-4">
             {[
-              { i: Phone, l: "Phone", v: "+91 90000 12345" },
-              { i: Mail, l: "Email", v: "hello@skilvantage.com" },
-              { i: MapPin, l: "Location", v: "Chennai, Tamil Nadu, India" },
+              { i: Phone, l: "Phone", v: "+91 63032 20248" },
+              { i: Mail, l: "Email", v: "skillvantageadmin@gmail.com" },
+              { i: MapPin, l: "Location", v: "Telengana, Hyderabad, India" },
             ].map((c) => (
               <Card key={c.l} className="flex items-start gap-4 border-slate-800 bg-[#111C35] p-5">
                 <c.i className="mt-0.5 h-5 w-5 shrink-0 text-sky-400" />
@@ -78,7 +78,7 @@ export default function Contact() {
               </Card>
             ))}
             <a
-              href="https://wa.me/919000012345"
+              href="https://wa.me/916303220248"
               target="_blank"
               rel="noreferrer"
               data-testid="whatsapp-cta"

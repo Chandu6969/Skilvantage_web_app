@@ -12,6 +12,7 @@ const NAV = [
   { to: "/job-ready", label: "Job Ready" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
+  
 ];
 
 export function SiteHeader() {
@@ -148,8 +149,8 @@ export function SiteFooter() {
         <div>
           <h4 className="font-heading text-sm font-semibold text-slate-100">Get in touch</h4>
           <ul className="mt-4 space-y-2.5 text-sm text-slate-400">
-            <li>+91 90000 12345</li>
-            <li>hello@skilvantage.com</li>
+            <li>+91 63032 20248</li>
+            <li>skillvantageadmin@gmail.com</li>
             <li>Chennai, India</li>
             <li>
               <Link to="/admin" className="transition-colors hover:text-sky-300" data-testid="footer-admin-link">

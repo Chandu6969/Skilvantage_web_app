@@ -162,7 +162,7 @@ export default function Home() {
           <div className="relative animate-rise">
             <div className="glass rounded-2xl p-1.5 shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=srgb&fm=jpg&q=80&w=1200"
+                src="https://res.cloudinary.com/bnic0zpd/image/upload/f_auto,q_auto/ChatGPT_Image_Sep_10_2026_05_57_54_PM"
                 alt="Analytics dashboards used in SkilVantage training projects"
                 className="h-64 w-full rounded-xl object-cover sm:h-80 lg:h-[26rem]"
                 loading="eager"
